@@ -12,7 +12,7 @@ export default {
 
 <style lang="less">
     @import "./style/common";
-    #app{
+    html{
         background-color: #eeeeee;
     }
 </style>
