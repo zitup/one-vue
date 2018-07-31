@@ -4,7 +4,7 @@
             <div class="date">
                 <span class="day">{{ getDate() }}</span>
                 <span class="year_mouth">{{ getMouth() }}</span>
-                <i></i>
+                <i class="i" :class="{ t: is_display_nav }"></i>
             </div>
             <div class="weather">
                 <span>{{ weather.city_name }}</span> ·
@@ -19,7 +19,7 @@
                 <span class="r"></span>
             </p>
             <ul>
-                <li v-for="item in data" :key="item.maketime" class="li" :class="{selected: is_selected}">
+                <li v-for="item in data" :key="item.maketime" class="li" :class="{selected: new Date(item.maketime).toLocaleDateString().indexOf(date) > -1}">
                     <img :src="item.hp_img_url" class="img">
                     <p class="date">{{ item.maketime.split(' ')[0].split('-').join('/') }}</p>
                 </li>
@@ -37,6 +37,7 @@ export default {
             is_display_nav: false,
             is_selected: false,
             is_body_scrool: false,
+            date: new Date().toLocaleDateString(),
             data: []
         }
     },
@@ -89,11 +90,15 @@ export default {
             font-size: 10px;
         }
 
-        i {
+        .i {
             display: inline-block;
-            border-width: 5px 0 5px 5px;
+            border-width: 0 0 5px 5px;
             border-style: solid;
             border-color: transparent transparent #333;
+            transition: transform .3s;
+            &.t{
+                transform: rotateZ(180deg);
+            }
         }
     }
 
@@ -143,8 +148,10 @@ export default {
         width: 48%;
         margin-bottom: 20px;
         font-size: 0;
-        border: 1px solid #333;
-        box-sizing: border-box;
+        border: .8px solid #eeeeee;
+        &.selected{
+            border: .8px solid #333;
+        }
         &:nth-of-type(even) {
             float: right;
         }
