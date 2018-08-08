@@ -1,37 +1,39 @@
 <template>
     <div>
         <div id="card" v-for="card in cards" :key="card.item_id">
-            <div class="ad" v-if="card.category == 6">
-                <img class="img" :src="card.img_url">
-            </div>
-            <div class="content" v-else>
-                <p class="category">- {{ card.tag_list[0] && card.tag_list[0].title || category[card.category-1] }} -</p>
-                <p class="title">{{ card.title }}</p>
-                <p class="author">文 / {{ card.author.user_name }}</p>
-                <div class="music" v-if="card.category == 4">
-                    <div>
-                        <span class="border"></span>
-                        <img :src="card.img_url" class="img">
-                        <span class="border"></span>
-                        <span class="s_of_m">STORIRS OF MUSIC</span>
-                        <span class="play_btn"></span>
-                    </div>
-                    <p class="music_title">{{ card.share_info.title.split(' ').pop() + '·' + card.author.user_name + ' | ' + card.subtitle.split(':')[1] }}</p>
+            <router-link :to="{name: router_category[card.category-1], params: { item_id: card.item_id }}">
+                <div class="ad" v-if="card.category == 6">
+                    <img class="img" :src="card.img_url">
                 </div>
-                <img :src="card.img_url" class="img" v-else>
-                <p class="forward">{{ card.forward }}</p>
-                <p class="subtitle" v-if="card.category == 5">--《{{ card.subtitle.split(':').pop() }}》</p>
-                <div class="label">
-                    <span class="date">{{ getDate(card.post_date) }}</span>
-                    <div class="operation">
-                        <span class="like">
-                            <span class="like_logo"></span>
-                            <span class="like_count">{{ card.like_count }}</span>
-                        </span>
-                        <span class="repost"></span>
+                <div class="content" v-else>
+                    <p class="category">- {{ card.tag_list[0] && card.tag_list[0].title || category[card.category-1] }} -</p>
+                    <p class="title">{{ card.title }}</p>
+                    <p class="author">文 / {{ card.author.user_name }}</p>
+                    <div class="music" v-if="card.category == 4">
+                        <div>
+                            <span class="border"></span>
+                            <img :src="card.img_url" class="img">
+                            <span class="border"></span>
+                            <span class="s_of_m">STORIRS OF MUSIC</span>
+                            <span class="play_btn"></span>
+                        </div>
+                        <p class="music_title">{{ card.share_info.title.split(' ').pop() + '·' + card.author.user_name + ' | ' + card.subtitle.split(':')[1] }}</p>
+                    </div>
+                    <img :src="card.img_url" class="img" v-else>
+                    <p class="forward">{{ card.forward }}</p>
+                    <p class="subtitle" v-if="card.category == 5">--《{{ card.subtitle.split(':').pop() }}》</p>
+                    <div class="label clear">
+                        <span class="date">{{ getDate(card.post_date) }}</span>
+                        <div class="operation">
+                            <span class="like">
+                                <span class="like_logo"></span>
+                                <span class="like_count">{{ card.like_count }}</span>
+                            </span>
+                            <span class="repost"></span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </router-link>
         </div>
     </div>
 </template>
@@ -41,7 +43,8 @@ export default {
     props: ['cards'],
     data() {
         return {
-            category: ['ONE STORY', '连载', '问答', '音乐', '影视'],
+            category: ['阅读', '连载', '问答', '音乐', '影视'],
+            router_category: ['essay', 'serialcontent', 'question', 'music', 'movie'],
             music_title: ''
         }
     },
@@ -55,10 +58,10 @@ export default {
                 let day = post_date.substr(8, 2);
                 return mouth + '月' + day + '日'
             }
+        },
+        goDeep: function () {
+
         }
-    },
-    created() {
-        // fetch('http://v3.wufazhuce.com:8000/api/music/detail/' + )
     }
 }
 </script>
@@ -173,9 +176,6 @@ export default {
                     height: 15px;
                     .bgi("../assets/logo.png");
                 }
-            }
-            &:after {
-                .clear();
             }
         }
     }

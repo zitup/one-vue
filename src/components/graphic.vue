@@ -1,5 +1,5 @@
 <template>
-    <div id="graphic">
+    <div id="graphic" v-cloak>
         <img class="img" :src="graphic.img_url" alt="">
         <span class="title_pic_info">{{ graphic.title + ' | ' + graphic.pic_info }}</span>
         <p class="forward">{{ graphic.forward }}</p>
@@ -34,6 +34,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+[v-cloak] {
+  display: none;
+}
     #graphic{
         text-align: center;
         background-color: #fff;
