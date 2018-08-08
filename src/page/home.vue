@@ -1,9 +1,9 @@
 <template>
-    <div v-if="data">
-        <headTop :weather="data.weather" v-if="data.weather" />
+    <div v-if="graphic">
+        <headTop :weather="weather" v-if="weather" @ohmyfather="gotoSomeone" :is_not_today="is_not_today" />
         <graphic :graphic="graphic" v-if="graphic" />
-        <overview :menu="menu" v-if="menu"/>
-        <card :cards="cards" v-if="cards"/>
+        <overview :menu="menu" v-if="menu" />
+        <card :cards="cards" v-if="cards" />
     </div>
 </template>
 
@@ -13,34 +13,42 @@ import graphic from '../components/graphic';
 import overview from '../components/overview';
 import card from '../components/card';
 
-import fetch from '../config/fetch'
+import request from '../service/request'
 
 export default {
     data() {
         return {
-            data: [],
-            graphic: {},
-            menu: {},
-            cards: []
+            weather: '', //天气
+            graphic: '', //图文
+            menu: '',   //概览
+            cards: '',  //essay、music、movie、question等
+            is_not_today: false
         }
     },
-    components:{
+    components: {
         headTop,
         graphic,
         overview,
         card
     },
     created() {
-        fetch('http://v3.wufazhuce.com:8000/api/onelist/4843/0', 'GET')
-            .then((res) => {
-                return res.json()
-            })
-            .then((res) => {
-                this.data = res.data;
-                this.graphic = res.data.content_list[0];
-                this.menu = res.data.menu;
-                this.cards = res.data.content_list.slice(1);
-            })
+        request.getOnelist().then(res => {
+            this.weather = res.data.weather;
+            this.graphic = res.data.content_list[0];
+            this.menu = res.data.menu;
+            this.cards = res.data.content_list.slice(1);
+        });
+    },
+    methods: {
+        gotoSomeone: function (date, today) {
+            this.is_not_today = date != today;
+            request.getSomeoneList(date)
+                .then(res => {
+                    this.graphic = res.data.content_list[0];
+                    this.menu = res.data.menu;
+                    this.cards = res.data.content_list.slice(1);
+                })
+        }
     }
 }
 </script>
