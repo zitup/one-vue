@@ -44,7 +44,7 @@ export default {
     data() {
         return {
             category: ['阅读', '连载', '问答', '音乐', '影视'],
-            router_category: ['essay', 'serialcontent', 'question', 'music', 'movie'],
+            router_category: ['Essay', 'Serialcontent', 'Question', 'Music', 'Movie'],
             music_title: ''
         }
     },

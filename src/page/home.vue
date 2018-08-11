@@ -20,8 +20,8 @@ export default {
         return {
             weather: '', //天气
             graphic: '', //图文
-            menu: '',   //概览
-            cards: '',  //essay、music、movie、question等
+            menu: '',    //概览
+            cards: '',   //essay、music、movie、question等
             is_not_today: false
         }
     },

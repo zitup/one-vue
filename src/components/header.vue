@@ -171,6 +171,11 @@ export default {
             this.setHeaderMonth(date);
             //重置当下显示one对应的日期
             this.date = date;
+            //
+            this.$store.commit({
+                type: 'setDate',
+                date: date
+            })
 
             this.$emit('ohmyfather', date, this.today)
         },
