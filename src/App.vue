@@ -14,5 +14,6 @@ export default {
     @import "./style/common";
     html{
         background-color: #eeeeee;
+        font-family: "PingFangSC-Light",sans-serif;
     }
 </style>
