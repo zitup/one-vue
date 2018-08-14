@@ -32,22 +32,21 @@ export default {
         card
     },
     created() {
-        request.getOnelist().then(res => {
-            this.weather = res.data.weather;
-            this.graphic = res.data.content_list[0];
-            this.menu = res.data.menu;
-            this.cards = res.data.content_list.slice(1);
-        });
+        this.gotoSomeone(this.$store.state.date);
     },
     methods: {
-        gotoSomeone: function (date, today) {
-            this.is_not_today = date != today;
-            request.getSomeoneList(date)
-                .then(res => {
-                    this.graphic = res.data.content_list[0];
-                    this.menu = res.data.menu;
-                    this.cards = res.data.content_list.slice(1);
-                })
+        gotoSomeone: function (date) {
+            this.is_not_today = date != this.$store.state.today;
+            this.$store.commit({
+                type: 'setDate',
+                date: date
+            })
+            request.getSomeoneList(date).then(res => {
+                this.weather = res.data.weather;
+                this.graphic = res.data.content_list[0];
+                this.menu = res.data.menu;
+                this.cards = res.data.content_list.slice(1);
+            })
         }
     }
 }

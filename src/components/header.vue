@@ -63,7 +63,6 @@ export default {
             is_body_scrool: false,//body是否可以滑动
             is_first_click: true, //第一次点击header判断，避免重复请求
             date: '',             //当下展示的one对应的日期
-            today: '',            //最新日期
             day: '',              //header展示one的日
             headerMonth: '',      //header展示one的年月
             month: '',            //本月
@@ -75,11 +74,11 @@ export default {
         }
     },
     created() {
-        let date = new Date().toDateString().split(' ');
-        let month = new Date().getMonth() + 1;
+        let date = new Date(this.$store.state.date).toDateString().split(' ');
+        let month = new Date(this.$store.state.date).getMonth() + 1;
 
         //当下展示的one对应的日期
-        this.date = this.today = date[3] + '-' + (month > 10 ? month : '0' + month) + '-' + date[2];
+        this.date = date[3] + '-' + (month > 10 ? month : '0' + month) + '-' + date[2];
         //本月
         this.month = month;
         //本年
@@ -94,7 +93,7 @@ export default {
     },
     methods: {
         //重置顶部日期
-        setHeaderMonth: function (d) {
+        setHeaderDate: function (d) {
             let date = new Date(d).toString().split(' ');
             this.day = date[2];
             this.headerMonth = date[1] + '.' + date[3];
@@ -104,7 +103,7 @@ export default {
             let ms = [this.year + '-' + this.month];
 
             //初始化滑动加载时请求的年月
-            this.lastMonth = this.month == 2 ? 12 : this.month == 1 ? 11 : this.month - 2;
+            this.lastMonth = this.month == 1 ? 11 : this.month - 1;
             this.lastYear = this.lastMonth > 10 ? this.year - 1 : this.year;
             //如果本月天数小于10天，则获取两个月数据
             if (this.day < 10) {
@@ -118,7 +117,7 @@ export default {
             this.lastYear = this.lastMonth != 12 ? this.lastYear : this.lastYear - 1;
         },
         getNav: function () {
-            //弹出层切换开关
+            //是否显示导航
             this.is_display_nav = !this.is_display_nav;
             //弹出层时，首页禁止滑动开关
             document.body.style.overflow = this.is_body_scrool ? '' : 'hidden';
@@ -132,8 +131,9 @@ export default {
                 //获取月份
                 let ltm = this.getLatestTwomonth();
                 request.getLTMdata(ltm).then(res => {
-                    that.data.push(res[0].data);
-                    that.data.push(res[1].data);
+                    for(let i in res){
+                        that.data.push(res[i].data);
+                    }
                 })
             }
 
@@ -160,7 +160,7 @@ export default {
             }
         },
         ohmyfather: function (date) {
-            //隐藏弹层
+            //是否显示弹层
             this.is_display_nav = false;
             //打开首页滑动
             document.body.style.overflow = '';
@@ -168,7 +168,7 @@ export default {
             //滑动到顶部
             window.scrollTo(0, 0);
             //重置顶部日期
-            this.setHeaderMonth(date);
+            this.setHeaderDate(date);
             //重置当下显示one对应的日期
             this.date = date;
             //
@@ -177,11 +177,11 @@ export default {
                 date: date
             })
 
-            this.$emit('ohmyfather', date, this.today)
+            this.$emit('ohmyfather', date)
         },
         //回到今天
         initToday: function (e) {
-            this.ohmyfather(this.today);
+            this.ohmyfather(this.$store.state.today);
             e.stopPropagation();
         }
     }
