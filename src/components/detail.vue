@@ -1,6 +1,4 @@
 <template>
-<div id="test">
-
     <div id="detail" v-if="content.author">
         <div class="header">
             <span class="back" @click="goback()"></span>
@@ -48,7 +46,6 @@
             </div>
         </div>
     </div>
-</div>
 </template>
 
 <script>
@@ -77,37 +74,19 @@ export default {
             this.commentCount = res[1].data.count;
             this.lastCommentId = res[1].data.data.pop().id;
         })
-        // this.$nextTick(() =>{
-        //     //滑到底部加载评论
-        //     let that = this;
-        //     let is_scroll_load = false;
-        //     let $detail = document.getElementById('detail');
-        //     $detail.onscroll = function(){
-        //         if(!is_scroll_load && document.documentElement.scrollTop + window.innerHeight >= document.documentElement.offsetHeight - 1){
-        //             is_scroll_load = true;
-        //             request.getMC(item_id, that.lastCommentId).then(res => {
-        //                 that.comments = that.comments.concat(res.data.data);
-        //                 that.lastCommentId = res.data.data.pop().id;
-        //                 is_scroll_load = false;
-        //             })
-        //         }
-        //     }
-        // })
-        setTimeout(function(){
-            let that = this;
-            let is_scroll_load = false;
-            let $detail = document.getElementById('detail');
-            $detail.onscroll = function(){
-                if(!is_scroll_load && document.documentElement.scrollTop + window.innerHeight >= document.documentElement.offsetHeight - 1){
-                    is_scroll_load = true;
-                    request.getMC(item_id, that.lastCommentId).then(res => {
-                        that.comments = that.comments.concat(res.data.data);
-                        that.lastCommentId = res.data.data.pop().id;
-                        is_scroll_load = false;
-                    })
-                }
+        //滑到底部加载评论
+        let that = this;
+        let is_scroll_load = false;
+        window.onscroll = function(){
+            if(!is_scroll_load && document.documentElement.scrollTop + window.innerHeight >= document.documentElement.offsetHeight - 1){
+                is_scroll_load = true;
+                request.getMC(item_id, that.lastCommentId).then(res => {
+                    that.comments = that.comments.concat(res.data.data);
+                    that.lastCommentId = res.data.data.pop().id;
+                    is_scroll_load = false;
+                })
             }
-        }, 2000)
+        }
     },
     methods: {
         goback: function(){
@@ -287,7 +266,7 @@ export default {
         }
         .date {
             float: right;
-            font-size: 13px;
+            font-size: 12px;
             color: #808080;
         }
         .quote{
