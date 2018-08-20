@@ -49,5 +49,53 @@ export default {
             .then(res => {
                 return res.json();
             })
+    },
+    //获取连载文章详情和评论
+    getSerialcontent: item_id => {
+        return Promise.all([fetch('/serialcontent/' + item_id).then(
+            res => {
+                return res.json();
+            }
+        ), fetch('/comment/praiseandtime/serial/' + item_id + '/0').then(
+            res => {
+                return res.json();
+            }
+        )])
+    },
+    //获取问答详情和评论
+    getQuestion: item_id => {
+        return Promise.all([fetch('/question/' + item_id).then(
+            res => {
+                return res.json();
+            }
+        ), fetch('/comment/praiseandtime/question/' + item_id + '/0').then(
+            res => {
+                return res.json();
+            }
+        )]);
+    },
+    //获取音乐详情和评论
+    getMusic: item_id => {
+        return Promise.all([fetch('/music/detail/' + item_id).then(
+            res => {
+                return res.json();
+            }
+        ), fetch('/comment/praiseandtime/music/' + item_id + '/0').then(
+            res => {
+                return res.json();
+            }
+        )]);
+    },
+    //获取影视详情和评论
+    getMovie: item_id => {
+        return Promise.all([fetch('/movie/' + item_id + '/story/1/0').then(
+            res => {
+                return res.json();
+            }
+        ), fetch('/comment/praiseandtime/movie/' + item_id + '/0').then(
+            res => {
+                return res.json();
+            }
+        )]);
     }
 };
