@@ -36,7 +36,7 @@
         },
         activated() {
             //解绑detail组件的onscroll事件
-            window.onscroll = '';
+            // window.onscroll = '';
         },
         methods: {
             gotoSomeone: function(date) {

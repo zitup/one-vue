@@ -58,9 +58,6 @@ export default {
                 let day = post_date.substr(8, 2);
                 return mouth + '月' + day + '日'
             }
-        },
-        goDeep: function () {
-
         }
     }
 }

@@ -3,6 +3,7 @@ import Router from "vue-router";
 import home from "@/page/home";
 const UserHome = { template: "<div>{{this.$route.name}}</div>" };
 import detail from "../components/detail";
+import serialList from "../components/serialList";
 Vue.use(Router);
 
 export default new Router({
@@ -27,7 +28,12 @@ export default new Router({
     {
         path: "/serialcontent/:item_id",
         name: "Serialcontent",
-        component: detail
+        component: detail,
+        children: [
+        {
+            path: "/seriallist",
+            component: serialList
+        }]
     },
     {
         path: "/question/:item_id",
