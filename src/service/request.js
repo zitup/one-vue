@@ -43,13 +43,6 @@ export default {
             }
         )]);
     },
-    //获取更多评论getMoreComment（基于上次评论最后一个评论ID）
-    getMC: (item_id, comment_id) => {
-        return fetch('/comment/praiseandtime/essay/' + item_id + '/' + comment_id, 'GET')
-            .then(res => {
-                return res.json();
-            })
-    },
     //获取连载文章详情和评论
     getSerialcontent: item_id => {
         return Promise.all([fetch('/serialcontent/' + item_id).then(
@@ -97,5 +90,35 @@ export default {
                 return res.json();
             }
         )]);
-    }
+    },
+    //获取更多评论getMoreComment（基于上次评论最后一个评论ID）
+    getMC: (category, item_id, comment_id) => {
+        switch (category) {
+            case 'Essay':
+                return fetch('/comment/praiseandtime/essay/' + item_id + '/' + comment_id, 'GET')
+                    .then(res => {
+                        return res.json();
+                    })
+            case 'Serialcontent':
+                return fetch('/comment/praiseandtime/serial/' + item_id + '/' + comment_id, 'GET')
+                    .then(res => {
+                        return res.json();
+                    })
+            case 'Question':
+                return fetch('/comment/praiseandtime/question/' + item_id + '/' + comment_id, 'GET')
+                    .then(res => {
+                        return res.json();
+                    })
+            case 'Music':
+                return fetch('/comment/praiseandtime/music/' + item_id + '/' + comment_id, 'GET')
+                    .then(res => {
+                        return res.json();
+                    })
+            case 'Movie':
+                return fetch('/comment/praiseandtime/movie/' + item_id + '/' + comment_id, 'GET')
+                    .then(res => {
+                        return res.json();
+                    })
+        }
+    },
 };

@@ -2,12 +2,15 @@
     <div id="detail" v-if="author[0]" ref="detail">
         <div class="header" :class="{ no_display: is_header_display }">
             <span class="back" @click="goback()"></span>
-            {{ getHTitle() }}
             <span class="collect"></span>
+            <p class="title">{{ headerTitle }}</p>
         </div>
         <div class="detail_wrap">
             <p class="title">{{ title }}</p>
-            <p class="author">文／{{ author[0].user_name }}</p>
+            <div class="author_wrap">
+                <span class="author">文／{{ author[0].user_name }}</span>
+                <router-link to="/seriallist"><span class="serialInfo"></span></router-link>
+            </div>
             <div class="reading" @click="audioControl()" v-if="audio.src">
                 <div class="progress" :style="{ width: progressBarWidth }"></div>
                 <span>图标</span>
@@ -47,6 +50,7 @@
                 </div>
             </div>
         </div>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -55,27 +59,29 @@
     export default {
         data() {
             return {
-                is_header_display: false,//滑动隐藏header标识
-                title: '',              //标题
-                content: '',            //内容
-                editor: '',             //编辑
-                author: [],             //作者信息
-                audio: {                //audio相关信息
+                is_header_display: false, //滑动隐藏header标识
+                title: '', //标题
+                tag_title: '', //header特殊标题
+                content: '', //内容
+                editor: '', //编辑
+                author: [], //作者信息
+                audio: { //audio相关信息
                     src: '',
                     anchor: '',
                     audio_duration: '',
                     currentTime: ''
                 },
-                is_audio_play: false,   //音频是否播放，默认false
-                comments: [],           //评论数据
-                lastCommentId: '',      //最后一个评论的id，用于获取下批评论
+                is_audio_play: false, //音频是否播放，默认false
+                comments: [], //评论数据
+                lastCommentId: '', //最后一个评论的id，用于获取下批评论
                 category: {
-                    Essay: 'ONE STORY',
+                    Essay: '阅读',
                     Serialcontent: '连载',
-                    Question: '问题',
+                    Question: '问答',
                     Music: '音乐',
                     Movie: '影视'
-                }
+                },
+                doc_scrollTop: ''
             }
         },
         created() {
@@ -87,23 +93,21 @@
             let that = this;
             request[m](item_id).then(res => {
                 that.comments = res[1].data.data;
-                that.lastCommentId = res[1].data.data.pop().id;
+                that.lastCommentId = res[1].data.data.slice(-1)[0].id;
                 that._handleData(res[0]);
             });
+
             //延迟添加详情页滚动事件，否则从home跳转过来会自动执行一次，待解...
-            setTimeout(this.addWScroll, 2000);
+            this.is_comment_load = false; //避免重复请求
+            this.no_comment = false; //评论加载完毕标识
+            setTimeout(function(){
+                window.addEventListener('scroll', that.addWScroll, false);
+            }, 2000);
+
         },
         methods: {
             goback: function() {
                 this.$router.back();
-            },
-            //获取header名称
-            getHTitle: function(){
-                if(document.documentElement.scrollTop > 80) {
-                    return this.title;
-                }else{
-                    return this.category[this.$route.name]
-                }
             },
             //audio播放暂停控制
             audioControl: function() {
@@ -120,30 +124,39 @@
             updatetime: function(e) {
                 this.audio.currentTime = e.target.currentTime;
             },
+            // _test: function(){
+            //     if(!this.ticking) {
+            //         window.requestAnimationFrame(this.addWScroll);
+            //         this.ticking = true;
+            //     }
+            // },
             //添加滚动事件
             addWScroll: function() {
-                let item_id = this.$route.params.item_id;
-                //滑到底部加载评论
+                let category = this.$route.name,
+                    item_id = this.$route.params.item_id;
                 let that = this;
-                let is_scroll_load = false;
-                window.onscroll = function() {
-                    if (!is_scroll_load && document.documentElement.scrollTop + window.innerHeight >= document.documentElement.offsetHeight - 1) {
-                        is_scroll_load = true;
-                        request.getMC(item_id, that.lastCommentId).then(res => {
-                            that.comments = that.comments.concat(res.data.data);
-                            that.lastCommentId = res.data.data.pop().id;
-                            is_scroll_load = false;
-                        })
+                if (!this.is_comment_load && document.documentElement.scrollTop + window.innerHeight >= document.documentElement.offsetHeight - 1 && document.documentElement.offsetHeight > 0) {
+                    if (this.no_comment) {
+                        //弹框：一个：没有评论啦...
+                        alert('no comments');
+                        return;
                     }
+                    this.is_comment_load = true;
+                    request.getMC(category, item_id, that.lastCommentId).then(res => {
+                        if (res.data.data.length == 0) {
+                            that.no_comment = true;
+                            that.is_comment_load = false;
+                            //弹框：一个：没有评论啦...
+                            alert('no comments');
+                            return;
+                        }
+                        that.comments = that.comments.concat(res.data.data);
+                        that.lastCommentId = res.data.data.slice(-1)[0].id;
+                        that.is_comment_load = false;
+                    })
                 }
-
-                let startP = '';
-                this.$refs.detail.ontouchstart = function(e) {
-                    startP = document.documentElement.scrollTop;
-                }
-                this.$refs.detail.ontouchmove = function() {
-                    that.is_header_display = startP < document.documentElement.scrollTop ? true : false;
-                }
+                //setScrollTop
+                this.doc_scrollTop = document.documentElement.scrollTop;
             },
             /**
              *          eassy                serialcontent  question        music        movie 
@@ -154,37 +167,42 @@
             _handleData: function(res) {
                 let category = this.$route.name,
                     data = res.data;
-                if(category == 'Essay'){
-                    this.title =data.hp_title;
-                    this.content =data.hp_content;
-                    this.editor = data.hp_author_introduce.slice(1, -1);
-                    this.author =data.author_list;
+
+                switch (category) {
+                    case 'Essay':
+                        this.title = data.hp_title;
+                        this.content = data.hp_content;
+                        this.editor = data.hp_author_introduce.slice(1, -1);
+                        this.author = data.author_list;
+                        this.tag_title = data.tag_list[0] && data.tag_list[0].title;
+                        break;
+                    case 'Serialcontent':
+                        this.title = data.title;
+                        this.content = data.content;
+                        this.editor = data.charge_edt.slice(1, -1);
+                        this.author = data.author_list;
+                        break;
+                    case 'Question':
+                        this.title = data.question_title;
+                        this.content = data.answer_content;
+                        this.editor = data.charge_edt.slice(1, -1);
+                        this.author = data.author_list;
+                        break;
+                    case 'Music':
+                        this.title = data.story_title;
+                        this.content = data.story;
+                        this.editor = data.charge_edt.slice(1, -1);
+                        this.author = data.author_list;
+                        break;
+                    case 'Movie':
+                        this.title = data.data[0].title;
+                        this.content = data.data[0].content;
+                        this.editor = data.data[0].charge_edt + data.data[0].editor_email;
+                        this.author = data.data[0].author_list;
+                        break;
                 }
-                if(category == 'Serialcontent'){
-                    this.title =data.title;
-                    this.content =data.content;
-                    this.editor = data.charge_edt.slice(1, -1);
-                    this.author =data.author_list;
-                }
-                if(category == 'Question'){
-                    this.title =data.question_title;
-                    this.content =data.answer_content;
-                    this.editor = data.charge_edt.slice(1, -1);
-                    this.author = data.author_list;
-                }
-                if(category == 'Music'){
-                    this.title = data.story_title;
-                    this.content = data.story;
-                    this.editor = data.charge_edt.slice(1, -1);
-                    this.author = data.author_list;
-                }
-                if(category == 'Movie'){
-                    this.title = data.title;
-                    this.content = data.content;
-                    this.editor = data.charge_edt + data.editor_email;
-                    this.author = data.author_list;
-                }
-                if(data.audio){
+
+                if (data.audio) {
                     this.audio.src = data.audio;
                     this.audio.anchor = data.anchor;
                     this.audio.audio_duration = data.audio_duration;
@@ -192,10 +210,28 @@
             }
         },
         computed: {
+            //header名字
+            headerTitle: function() {
+                if (this.doc_scrollTop > 80) {
+                    return this.title;
+                } else {
+                    return this.tag_title || this.category[this.$route.name]
+                }
+            },
             //audio进度条控制
             progressBarWidth: function() {
                 let w = this.audio.currentTime / this.audio.audio_duration * 100 + '%';
                 return w;
+            }
+        },
+        watch: {
+            //随滑动隐藏或显示header
+            doc_scrollTop: function(newVal, oldVal) {
+                if (newVal < oldVal) {
+                    document.getElementsByClassName('header')[0].style.opacity = 1
+                } else {
+                    document.getElementsByClassName('header')[0].style.opacity = 0
+                }
             }
         }
     }
@@ -211,15 +247,16 @@
             height: 50px;
             width: 100%;
             line-height: 50px;
-            padding: 0 20px;
+            padding: 0 12px;
             text-align: center;
             font-size: 14px;
             border-bottom: 1px solid #e6e6e6;
             background-color: #fff;
             transition: .2s linear;
             overflow: hidden;
+            z-index: 1;
             &.no_display {
-                height: 0;
+                opacity: 0;
             }
             span {
                 height: 20px;
@@ -234,173 +271,188 @@
             .collect {
                 float: right;
             }
+            .title {
+                margin: 0 40px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
         }
         .detail_wrap {
             padding: 0 20px;
             margin-top: 50px;
-        }
-        .title {
-            padding-top: 30px;
-            line-height: 36px;
-            font-size: 24px;
-            font-weight: 700;
-        }
-        .author {
-            margin-top: 30px;
-            font-size: 12px;
-            line-height: 32px;
-        }
-        .reading {
-            position: relative;
-            height: 46px;
-            line-height: 34px;
-            margin-top: 26px;
-            padding: 6px 10px;
-            border: 1px solid #666666;
-            border-radius: 5px;
-            font-size: 16px;
-            .progress {
-                width: 1px;
-                max-width: 100%;
-                position: absolute;
-                top: 0px;
-                bottom: 0px;
-                left: 0px;
-                background: rgba(0, 0, 0, 0.05);
+            .title {
+                padding-top: 30px;
+                line-height: 36px;
+                font-size: 24px;
+                font-weight: 700;
             }
-            .date {
-                float: right;
-            }
-        }
-        .content {
-            margin-top: 30px;
-        }
-        .editor {
-            margin-top: 30px;
-            color: #808080;
-            line-height: 18px;
-            font-size: 12px;
-        }
-        .author_title,
-        .comment_title {
-            line-height: 21px;
-            font-size: 14px;
-            font-weight: normal;
-            padding-bottom: 10px;
-            &:after {
-                content: "";
-                height: 4px;
-                background-color: black;
-                clear: both;
-                width: 60px;
-                display: block;
-                margin-top: 8px;
-            }
-        }
-        .author_title {
-            margin-top: 34px;
-        }
-        .author_info {
-            padding: 10px 0;
-            .img {
-                float: left;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-            }
-            .info {
-                float: left;
-                margin-left: 12px;
-                max-width: 66%;
-                .name {
-                    font-size: 14px;
-                    line-height: 21px;
-                }
-                .brief {
+            .author_wrap {
+                margin-top: 30px;
+                line-height: 32px;
+                .author {
                     font-size: 12px;
-                    line-height: 21px;
-                    color: #808080;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
                 }
-            }
-            .follow {
-                float: right;
-                width: 44px;
-                padding: 6px 0px;
-                line-height: 18px;
-                text-align: center;
-                font-size: 12px;
-                color: #808080;
-                border: 1px solid rgba(128, 128, 128, 0.6);
-                border-radius: 2px;
-                &.fans {
-                    background-color: #d9d9d9;
-                    border: none;
-                }
-            }
-        }
-        .comment_title {
-            margin-top: 30px;
-        }
-        .comment {
-            padding: 10px 0;
-            border-bottom: 1px solid #eaeaea;
-            font-size: 0;
-            &.is_top_comment {
-                border-bottom: none;
-            }
-            .img {
-                height: 20px;
-                width: 20px;
-                border-radius: 50%;
-                vertical-align: top;
-            }
-            .name {
-                margin-left: 10px;
-                font-size: 13px;
-                color: #979797;
-            }
-            .date {
-                float: right;
-                font-size: 12px;
-                color: #808080;
-            }
-            .quote {
-                margin: 10px 0 0 20px;
-                padding: 0 10px;
-                line-height: 25px;
-                border: 1px solid #eaeaea;
-                font-size: 13px;
-            }
-            .c_content {
-                margin: 10px 0 0 20px;
-                line-height: 25px;
-                font-size: 13px;
-            }
-            .c_label {
-                margin-top: 15px;
-                font-size: 10px;
-                color: #666666;
-                text-align: right;
-            }
-            .top_comment {
-                font-size: 12px;
-                color: #eaeaea;
-                text-align: center;
-                .l,
-                .r {
-                    height: 1px;
-                    width: 35%;
-                    margin-top: 8px;
-                    background-color: #eaeaea;
-                }
-                .l {
-                    float: left;
-                }
-                .r {
+                .serialInfo {
                     float: right;
+                    width: 16px;
+                    height: 16px;
+                    margin-top: 8px;
+                    .bgi("../assets/logo.png")
+                }
+            }
+            .reading {
+                position: relative;
+                height: 46px;
+                line-height: 34px;
+                margin-top: 26px;
+                padding: 6px 10px;
+                border: 1px solid #666666;
+                border-radius: 5px;
+                font-size: 16px;
+                .progress {
+                    width: 1px;
+                    max-width: 100%;
+                    position: absolute;
+                    top: 0px;
+                    bottom: 0px;
+                    left: 0px;
+                    background: rgba(0, 0, 0, 0.05);
+                }
+                .date {
+                    float: right;
+                }
+            }
+            .content {
+                margin-top: 30px;
+            }
+            .editor {
+                margin-top: 30px;
+                color: #808080;
+                line-height: 18px;
+                font-size: 12px;
+            }
+            .author_title,
+            .comment_title {
+                line-height: 21px;
+                font-size: 14px;
+                font-weight: normal;
+                padding-bottom: 10px;
+                &:after {
+                    content: "";
+                    height: 4px;
+                    background-color: black;
+                    clear: both;
+                    width: 60px;
+                    display: block;
+                    margin-top: 8px;
+                }
+            }
+            .author_title {
+                margin-top: 34px;
+            }
+            .author_info {
+                padding: 10px 0;
+                .img {
+                    float: left;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                }
+                .info {
+                    float: left;
+                    margin-left: 12px;
+                    max-width: 66%;
+                    .name {
+                        font-size: 14px;
+                        line-height: 21px;
+                    }
+                    .brief {
+                        font-size: 12px;
+                        line-height: 21px;
+                        color: #808080;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+                .follow {
+                    float: right;
+                    width: 44px;
+                    padding: 6px 0px;
+                    line-height: 18px;
+                    text-align: center;
+                    font-size: 12px;
+                    color: #808080;
+                    border: 1px solid rgba(128, 128, 128, 0.6);
+                    border-radius: 2px;
+                    &.fans {
+                        background-color: #d9d9d9;
+                        border: none;
+                    }
+                }
+            }
+            .comment_title {
+                margin-top: 30px;
+            }
+            .comment {
+                padding: 10px 0;
+                border-bottom: 1px solid #eaeaea;
+                font-size: 0;
+                &.is_top_comment {
+                    border-bottom: none;
+                }
+                .img {
+                    height: 20px;
+                    width: 20px;
+                    border-radius: 50%;
+                    vertical-align: top;
+                }
+                .name {
+                    margin-left: 10px;
+                    font-size: 13px;
+                    color: #979797;
+                }
+                .date {
+                    float: right;
+                    font-size: 12px;
+                    color: #808080;
+                }
+                .quote {
+                    margin: 10px 0 0 20px;
+                    padding: 0 10px;
+                    line-height: 25px;
+                    border: 1px solid #eaeaea;
+                    font-size: 13px;
+                }
+                .c_content {
+                    margin: 10px 0 0 20px;
+                    line-height: 25px;
+                    font-size: 13px;
+                }
+                .c_label {
+                    margin-top: 15px;
+                    font-size: 10px;
+                    color: #666666;
+                    text-align: right;
+                }
+                .top_comment {
+                    font-size: 12px;
+                    color: #eaeaea;
+                    text-align: center;
+                    .l,
+                    .r {
+                        height: 1px;
+                        width: 35%;
+                        margin-top: 8px;
+                        background-color: #eaeaea;
+                    }
+                    .l {
+                        float: left;
+                    }
+                    .r {
+                        float: right;
+                    }
                 }
             }
         }

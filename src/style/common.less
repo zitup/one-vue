@@ -1,8 +1,13 @@
-body, header, div, span, img, ul, li, i, p, a{
+body, header, div, span, img, ul, li, i, p, a, h4, h5{
     margin: 0;
     padding: 0;
     color: #333333;
     list-style: none;
     box-sizing: border-box;
     text-decoration: none;
-}  
+}
+
+a {
+    //取消轻按a标签时的高亮
+    -webkit-tap-highlight-color: transparent;
+}
