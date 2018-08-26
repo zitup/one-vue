@@ -4,35 +4,8 @@
             <p class="close"></p>
             <h4 class="title">风从海上来</h4>
             <ul class="clear">
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
-                </li>
-                <li class="li">
-                    <a href="">1</a>
+                <li class="li" v-for="lis in list" :key="lis.id">
+                    <router-link :to="'/serialcontent/' + lis.id">{{ lis.number }}</router-link>
                 </li>
             </ul>
         </div>
@@ -40,8 +13,24 @@
 </template>
 
 <script>
+    import request from '../service/request';
     export default {
+        data() {
+            return {
+                title: '',//名字
+                finished: '',//是否完结
+                list: ''//连载list
+            }
+        },
+        created() {
+            let serial_id = this.$route.params.serial_id;
 
+            request.getSerialList(serial_id).then(res => {
+                this.title = res.data.title;
+                this.finished = res.data.finished;
+                this.list = res.data.list;
+            })
+        }
     }
 </script>
 

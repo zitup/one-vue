@@ -95,30 +95,37 @@ export default {
     getMC: (category, item_id, comment_id) => {
         switch (category) {
             case 'Essay':
-                return fetch('/comment/praiseandtime/essay/' + item_id + '/' + comment_id, 'GET')
+                return fetch('/comment/praiseandtime/essay/' + item_id + '/' + comment_id)
                     .then(res => {
                         return res.json();
                     })
             case 'Serialcontent':
-                return fetch('/comment/praiseandtime/serial/' + item_id + '/' + comment_id, 'GET')
+                return fetch('/comment/praiseandtime/serial/' + item_id + '/' + comment_id)
                     .then(res => {
                         return res.json();
                     })
             case 'Question':
-                return fetch('/comment/praiseandtime/question/' + item_id + '/' + comment_id, 'GET')
+                return fetch('/comment/praiseandtime/question/' + item_id + '/' + comment_id)
                     .then(res => {
                         return res.json();
                     })
             case 'Music':
-                return fetch('/comment/praiseandtime/music/' + item_id + '/' + comment_id, 'GET')
+                return fetch('/comment/praiseandtime/music/' + item_id + '/' + comment_id)
                     .then(res => {
                         return res.json();
                     })
             case 'Movie':
-                return fetch('/comment/praiseandtime/movie/' + item_id + '/' + comment_id, 'GET')
+                return fetch('/comment/praiseandtime/movie/' + item_id + '/' + comment_id)
                     .then(res => {
                         return res.json();
                     })
         }
     },
+    //获取连载导航
+    getSerialList: serial_id => {
+        return fetch('/serial/list/' + serial_id)
+            .then(res => {
+                return res.json();
+            })
+    }
 };
