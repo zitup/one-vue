@@ -32,6 +32,7 @@ export default new Router({
         children: [
         {
             path: "/seriallist",
+            name: "serialList",
             component: serialList
         }]
     },

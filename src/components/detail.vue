@@ -9,7 +9,7 @@
             <p class="title">{{ title }}</p>
             <div class="author_wrap">
                 <span class="author">文／{{ author[0].user_name }}</span>
-                <router-link to="/seriallist"><span class="serialInfo"></span></router-link>
+                <router-link :to="{ name: 'serialList', params: { serial_id: serial_id }}"><span class="serialInfo"></span></router-link>
             </div>
             <div class="reading" @click="audioControl()" v-if="audio.src">
                 <div class="progress" :style="{ width: progressBarWidth }"></div>
@@ -181,6 +181,7 @@
                         this.content = data.content;
                         this.editor = data.charge_edt.slice(1, -1);
                         this.author = data.author_list;
+                        this.serial_id = data.serial_id;
                         break;
                     case 'Question':
                         this.title = data.question_title;
