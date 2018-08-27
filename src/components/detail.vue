@@ -1,6 +1,6 @@
 <template>
-    <div id="detail" v-if="author[0]" ref="detail">
-        <div class="header" :class="{ no_display: is_header_display }">
+    <div id="detail" v-if="author[0]">
+        <div class="header" ref="header" :class="{ no_display: is_header_display }">
             <span class="back" @click="goback()"></span>
             <span class="collect"></span>
             <p class="title">{{ headerTitle }}</p>
@@ -9,7 +9,9 @@
             <p class="title">{{ title }}</p>
             <div class="author_wrap">
                 <span class="author">文／{{ author[0].user_name }}</span>
-                <router-link :to="{ name: 'serialList', params: { serial_id: serial_id }}"><span class="serialInfo"></span></router-link>
+                <router-link :to="{ name: 'serialList', params: { serial_id: serial_id, number: number }}">
+                    <span class="serialInfo"></span>
+                </router-link>
             </div>
             <div class="reading" @click="audioControl()" v-if="audio.src">
                 <div class="progress" :style="{ width: progressBarWidth }"></div>
@@ -81,33 +83,22 @@
                     Music: '音乐',
                     Movie: '影视'
                 },
-                doc_scrollTop: ''
+                doc_scrollTop: '',
+                is_comment_load: false,//避免评论加载的重复请求
+                no_comment: false //评论加载完毕标识
             }
         },
         created() {
-            let category = this.$route.name,
-                item_id = this.$route.params.item_id;
-            let m = 'get' + category;
-
-            //获取内容和评论
-            let that = this;
-            request[m](item_id).then(res => {
-                that.comments = res[1].data.data;
-                that.lastCommentId = res[1].data.data.slice(-1)[0].id;
-                that._handleData(res[0]);
-            });
-
-            //延迟添加详情页滚动事件，否则从home跳转过来会自动执行一次，待解...
-            this.is_comment_load = false; //避免重复请求
-            this.no_comment = false; //评论加载完毕标识
-            setTimeout(function(){
-                window.addEventListener('scroll', that.addWScroll, false);
-            }, 2000);
-
+            this._setData();
+            //从home跳转过来会出发scroll事件，待解...
+        },
+        beforeRouteLeave (to, from, next) {
+            window.removeEventListener('scroll', this.addWScroll);
+            next();
         },
         methods: {
             goback: function() {
-                this.$router.back();
+                this.$router.push({name: 'home'});
             },
             //audio播放暂停控制
             audioControl: function() {
@@ -124,12 +115,20 @@
             updatetime: function(e) {
                 this.audio.currentTime = e.target.currentTime;
             },
-            // _test: function(){
-            //     if(!this.ticking) {
-            //         window.requestAnimationFrame(this.addWScroll);
-            //         this.ticking = true;
-            //     }
-            // },
+            _setData: function() {
+                let category = this.$route.name,
+                    item_id = this.$route.params.item_id;
+                let m = 'get' + category;
+
+                //获取内容和评论
+                let that = this;
+                request[m](item_id).then(res => {
+                    that.comments = res[1].data.data;
+                    that.lastCommentId = res[1].data.data.slice(-1)[0].id;
+                    that._handleData(res[0]);
+                    window.addEventListener('scroll', that.addWScroll, false);
+                });
+            },
             //添加滚动事件
             addWScroll: function() {
                 let category = this.$route.name,
@@ -182,6 +181,7 @@
                         this.editor = data.charge_edt.slice(1, -1);
                         this.author = data.author_list;
                         this.serial_id = data.serial_id;
+                        this.number = data.number;
                         break;
                     case 'Question':
                         this.title = data.question_title;
@@ -229,9 +229,15 @@
             //随滑动隐藏或显示header
             doc_scrollTop: function(newVal, oldVal) {
                 if (newVal < oldVal) {
-                    document.getElementsByClassName('header')[0].style.opacity = 1
+                    this.$refs.header.style.opacity = 1
                 } else {
-                    document.getElementsByClassName('header')[0].style.opacity = 0
+                    this.$refs.header.style.opacity = 0
+                }
+            },
+            '$route' (to, from) {
+                if (from.name == 'serialList') {
+                    this._setData();
+                    document.body.style.overflow = 'inherit';
                 }
             }
         }
