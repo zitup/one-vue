@@ -1,11 +1,11 @@
 <template>
     <div id="serialList">
         <div class="list_wrap">
-            <p class="close"></p>
-            <h4 class="title">风从海上来</h4>
+            <p class="close" @click="close()"></p>
+            <h4 class="title">风从海上来<span v-if="finished == 0">(未完结)</span></h4>
             <ul class="clear">
                 <li class="li" v-for="lis in list" :key="lis.id">
-                    <router-link :to="'/serialcontent/' + lis.id">{{ lis.number }}</router-link>
+                    <router-link :to="'/serialcontent/' + lis.id" :class="{ current: number == lis.number }">{{ lis.number }}</router-link>
                 </li>
             </ul>
         </div>
@@ -19,7 +19,8 @@
             return {
                 title: '',//名字
                 finished: '',//是否完结
-                list: ''//连载list
+                list: '',//连载list
+                number: this.$route.params.number
             }
         },
         created() {
@@ -30,6 +31,14 @@
                 this.finished = res.data.finished;
                 this.list = res.data.list;
             })
+
+            document.body.style.overflow = 'hidden';
+        },
+        methods: {
+            close: function() {
+                document.body.style.overflow = 'inherit';
+                this.$router.back();
+            }
         }
     }
 </script>
@@ -79,6 +88,9 @@
                     transition: 0.1s ease-out;
                     &:active {
                         box-shadow: 0 0 10px 1px #e3e3e3;
+                    }
+                    &.current {
+                        text-decoration: underline;
                     }
                 }
             }

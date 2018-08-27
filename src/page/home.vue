@@ -38,6 +38,15 @@
             //解绑detail组件的onscroll事件
             // window.onscroll = '';
         },
+        beforeRouteLeave(to, from, next) {
+            this.top = document.documentElement.scrollTop
+            next();
+        },
+        beforeRouteEnter(to, from, next) {
+            next(vm => {
+                window.scrollTo(0, vm.top)
+            })
+        },
         methods: {
             gotoSomeone: function(date) {
                 this.is_not_today = date != this.$store.state.today;
