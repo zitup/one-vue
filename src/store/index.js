@@ -10,14 +10,21 @@ let day = date.getDate();
 let latestDate = year + '-' + (month > 10 ? month : '0' + month) + '-' + day;
 
 const state = {
-    today: latestDate, //今天日期：xxxx-xx-xx
-    date: latestDate   //选中日期，默认是今天,xxxx-xx-xx
+    today: latestDate, // 今天日期：xxxx-xx-xx
+    date: latestDate, // 选中日期，默认是今天,xxxx-xx-xx
+    category: {
+        Essay: '阅读',
+        Serialcontent: '连载',
+        Question: '问答',
+        Music: '音乐',
+        Movie: '影视'
+    }
 }
 
 export default new Vuex.Store({
     state,
     mutations: {
-        setDate(state, payload){
+        setDate(state, payload) {
             state.date = payload.date;
         }
     }

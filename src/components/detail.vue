@@ -9,7 +9,11 @@
             <p class="title">{{ title }}</p>
             <div class="author_wrap">
                 <span class="author">文／{{ author[0].user_name }}</span>
-                <router-link :to="{ name: 'serialList', params: { serial_id: serial_id, number: number }}">
+                <!-- <router-link :to="{ name: 'serialList', params: { serial_id: serial_id, number: number }}" v-if="category == 'Serialcontent'">
+                    <span class="serialInfo"></span>
+                </router-link> -->
+
+                <router-link :to="{ name: 'serialList', params: { lyric: lyric }}" v-if="category == 'Music'">
                     <span class="serialInfo"></span>
                 </router-link>
             </div>
@@ -20,6 +24,11 @@
                 <span>{{ audio.anchor }}</span>
                 <span class="date">{{ getAudioTime() }}</span>
                 <audio :src="audio.src" id="audio" @timeupdate="updatetime"></audio>
+            </div>
+            <div class="q_subtitle" v-if="category == 'Question'">
+                <p class="asker">{{ asker }}问：</p>
+                <p class="subtitle">{{ title }}</p>
+                <p class="answerer">{{ answerer }}答：</p>
             </div>
             <div class="content" v-html="content"></div>
             <p class="editor">{{ editor }}</p>
@@ -58,39 +67,45 @@
 
 <script>
     import request from '../service/request';
+    import serialList from './serialList'
     export default {
+        components: {
+            serialList
+        },
         data() {
             return {
-                is_header_display: false, //滑动隐藏header标识
-                title: '', //标题
-                tag_title: '', //header特殊标题
-                content: '', //内容
-                editor: '', //编辑
-                author: [], //作者信息
-                audio: { //audio相关信息
+                category: '',// 文章类别
+                is_header_display: false, // 滑动隐藏header标识
+                title: '', // 标题
+                tag_title: '', // header特殊标题
+                content: '', // 内容
+                editor: '', // 编辑
+                author: [], // 作者信息
+                audio: { // audio相关信息
                     src: '',
                     anchor: '',
                     audio_duration: '',
                     currentTime: ''
                 },
-                is_audio_play: false, //音频是否播放，默认false
-                comments: [], //评论数据
-                lastCommentId: '', //最后一个评论的id，用于获取下批评论
-                category: {
-                    Essay: '阅读',
-                    Serialcontent: '连载',
-                    Question: '问答',
-                    Music: '音乐',
-                    Movie: '影视'
-                },
-                doc_scrollTop: '',
-                is_comment_load: false,//避免评论加载的重复请求
-                no_comment: false //评论加载完毕标识
+                is_audio_play: false, // 音频是否播放，默认false
+                comments: [], // 评论数据
+                lastCommentId: '', // 最后一个评论的id，用于获取下批评论
+                // category: {
+                //     Essay: '阅读',
+                //     Serialcontent: '连载',
+                //     Question: '问答',
+                //     Music: '音乐',
+                //     Movie: '影视'
+                // },
+                doc_scrollTop: '',// 滚动高度
+                is_comment_load: false,// 避免评论加载的重复请求
+                no_comment: false // 评论加载完毕标识
             }
         },
         created() {
+            this.category = this.$route.name;
             this._setData();
-            //从home跳转过来会出发scroll事件，待解...
+            // 从home跳转过来会出发scroll事件，待解...
         },
         beforeRouteLeave (to, from, next) {
             window.removeEventListener('scroll', this.addWScroll);
@@ -100,7 +115,7 @@
             goback: function() {
                 this.$router.push({name: 'home'});
             },
-            //audio播放暂停控制
+            // audio播放暂停控制
             audioControl: function() {
                 let audio = document.getElementById('audio');
 
@@ -108,7 +123,7 @@
 
                 this.is_audio_play = !this.is_audio_play;
             },
-            //获取audio时长
+            // 获取audio时长
             getAudioTime: function() {
                 return Math.floor(this.audio.audio_duration / 60) + ':' + this.audio.audio_duration % 60;
             },
@@ -116,11 +131,10 @@
                 this.audio.currentTime = e.target.currentTime;
             },
             _setData: function() {
-                let category = this.$route.name,
-                    item_id = this.$route.params.item_id;
-                let m = 'get' + category;
+                let item_id = this.$route.params.item_id;
+                let m = 'get' + this.category;
 
-                //获取内容和评论
+                // 获取内容和评论
                 let that = this;
                 request[m](item_id).then(res => {
                     that.comments = res[1].data.data;
@@ -129,23 +143,22 @@
                     window.addEventListener('scroll', that.addWScroll, false);
                 });
             },
-            //添加滚动事件
+            // 添加滚动事件
             addWScroll: function() {
-                let category = this.$route.name,
-                    item_id = this.$route.params.item_id;
+                let item_id = this.$route.params.item_id;
                 let that = this;
                 if (!this.is_comment_load && document.documentElement.scrollTop + window.innerHeight >= document.documentElement.offsetHeight - 1 && document.documentElement.offsetHeight > 0) {
                     if (this.no_comment) {
-                        //弹框：一个：没有评论啦...
+                        // 弹框：一个：没有评论啦...
                         alert('no comments');
                         return;
                     }
                     this.is_comment_load = true;
-                    request.getMC(category, item_id, that.lastCommentId).then(res => {
+                    request.getMC(that.category, item_id, that.lastCommentId).then(res => {
                         if (res.data.data.length == 0) {
                             that.no_comment = true;
                             that.is_comment_load = false;
-                            //弹框：一个：没有评论啦...
+                            // 弹框：一个：没有评论啦...
                             alert('no comments');
                             return;
                         }
@@ -154,7 +167,7 @@
                         that.is_comment_load = false;
                     })
                 }
-                //setScrollTop
+                // setScrollTop
                 this.doc_scrollTop = document.documentElement.scrollTop;
             },
             /**
@@ -164,10 +177,9 @@
              * editor   hp_author_introduce  charge_edt     charge_edt      charge_edt   charge_edt+editor_email
              */
             _handleData: function(res) {
-                let category = this.$route.name,
-                    data = res.data;
+                let data = res.data;
 
-                switch (category) {
+                switch (this.category) {
                     case 'Essay':
                         this.title = data.hp_title;
                         this.content = data.hp_content;
@@ -188,12 +200,15 @@
                         this.content = data.answer_content;
                         this.editor = data.charge_edt.slice(1, -1);
                         this.author = data.author_list;
+                        this.asker = data.asker.user_name;
+                        this.answerer = data.answerer.user_name;
                         break;
                     case 'Music':
                         this.title = data.story_title;
                         this.content = data.story;
                         this.editor = data.charge_edt.slice(1, -1);
                         this.author = data.author_list;
+                        this.lyric = data.lyric;
                         break;
                     case 'Movie':
                         this.title = data.data[0].title;
@@ -211,22 +226,22 @@
             }
         },
         computed: {
-            //header名字
+            // header名字
             headerTitle: function() {
                 if (this.doc_scrollTop > 80) {
                     return this.title;
                 } else {
-                    return this.tag_title || this.category[this.$route.name]
+                    return this.tag_title || this.$store.state.category[this.$route.name]
                 }
             },
-            //audio进度条控制
+            // audio进度条控制
             progressBarWidth: function() {
                 let w = this.audio.currentTime / this.audio.audio_duration * 100 + '%';
                 return w;
             }
         },
         watch: {
-            //随滑动隐藏或显示header
+            // 随滑动隐藏或显示header
             doc_scrollTop: function(newVal, oldVal) {
                 if (newVal < oldVal) {
                     this.$refs.header.style.opacity = 1
@@ -330,8 +345,24 @@
                     float: right;
                 }
             }
-            .content {
+            .q_subtitle{
                 margin-top: 30px;
+                .asker{
+                    font-size: 12px;
+                }
+                .subtitle{
+                    margin-top: 15px;
+                    padding-bottom: 20px;
+                    font-size: 14px;
+                    border-bottom: 1px solid #f2f2f2;
+                }
+                .answerer{
+                    font-size: 12px;
+                    margin-top: 30px;
+                }
+            }
+            .content {
+                margin-top: 20px;
             }
             .editor {
                 margin-top: 30px;
