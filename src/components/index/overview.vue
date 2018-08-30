@@ -49,7 +49,7 @@ export default {
             width: 12px;
             height: 12px;
             margin-left: 3px;
-            background-image: url(../assets/logo.png);
+            background-image: url(../../assets/logo.png);
             background-size: cover;
             vertical-align: middle;
             transition: transform .5s;
@@ -75,7 +75,7 @@ export default {
                 height: 12px;
                 width: 12px;
                 margin-right: 5px;
-                background-image: url(../assets/logo.png);
+                background-image: url(../../assets/logo.png);
                 background-size: cover;
                 position: absolute;
                 top: 50%;

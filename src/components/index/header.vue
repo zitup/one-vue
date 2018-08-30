@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import request from '../service/request'
+import request from '../../service/request'
 export default {
     props: ['weather', 'is_not_today'],
     data() {
@@ -189,7 +189,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "../style/mixin";
+@import "../../style/mixin";
 #header {
     width: 100%;
     height: 44px;

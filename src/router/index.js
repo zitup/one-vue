@@ -1,8 +1,8 @@
 import Vue from "vue";
 import Router from "vue-router";
 import home from "@/page/home";
-import detail from "../components/detail";
-import serialList from "../components/serialList";
+import detail from "../components/detail/detail";
+import serialList from "../components/detail/serialList";
 Vue.use(Router);
 
 export default new Router({

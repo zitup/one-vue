@@ -66,7 +66,7 @@ export default {
                     display: inline-block;
                     height: 15px;
                     width: 15px;
-                    background-image: url('../assets/logo.png');
+                    background-image: url('../../assets/logo.png');
                     background-size: cover;
                     vertical-align: middle;
                 }
@@ -80,13 +80,13 @@ export default {
                     margin-right: 25px;
                     background-size: cover;
                     &.note{
-                        background-image: url('../assets/logo.png');
+                        background-image: url('../../assets/logo.png');
                     }
                     &.collection{
-                        background-image: url('../assets/logo.png');
+                        background-image: url('../../assets/logo.png');
                     }
                     &.repost{
-                        background-image: url('../assets/logo.png');
+                        background-image: url('../../assets/logo.png');
                     }
                     &.like{
                         width: auto;
@@ -94,10 +94,10 @@ export default {
                             display: inline-block;
                             height: 15px;
                             width: 15px;
-                            background-image: url('../assets/logo.png');
+                            background-image: url('../../assets/logo.png');
                             background-size: cover;
                             &.active{
-                                background-image: url('../assets/logo.png');
+                                background-image: url('../../assets/logo.png');
                             }
                         }
                         .like_count{

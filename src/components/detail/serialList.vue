@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import request from '../service/request';
+    import request from '../../service/request';
     export default {
         props: ['serial_id', 'number'],
         data() {
@@ -45,7 +45,7 @@
 </script>
 
 <style lang="less" scoped>
-    @import '../style/mixin';
+    @import '../../style/mixin';
     #serialList {
         position: fixed;
         top: 0;
@@ -62,7 +62,7 @@
                 height: 20px;
                 width: 20px;
                 margin: 0 12px;
-                .bgi("../assets/logo.png");
+                .bgi("../../assets/logo.png");
                 text-align: left;
             }
             .title {

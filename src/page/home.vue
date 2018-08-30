@@ -8,10 +8,10 @@
 </template>
 
 <script>
-    import headTop from '../components/header';
-    import graphic from '../components/graphic';
-    import overview from '../components/overview';
-    import card from '../components/card';
+    import headTop from '../components/index/header';
+    import graphic from '../components/index/graphic';
+    import overview from '../components/index/overview';
+    import card from '../components/index/card';
 
     import request from '../service/request'
 

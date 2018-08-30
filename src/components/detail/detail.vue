@@ -9,13 +9,12 @@
             <p class="title">{{ title }}</p>
             <div class="author_wrap">
                 <span class="author">文／{{ author[0].user_name }}</span>
-                <!-- <router-link :to="{ name: 'serialList', params: { serial_id: serial_id, number: number }}" v-if="category == 'Serialcontent'">
+                <router-link :to="{ name: moreInfo_name, params: moreInfo_params}" v-if="category != 'Essay' && category != 'Question'">
+                    <span :class="moreInfo_class"></span>
+                </router-link>
+                <!-- <router-link :to="{ name: 'serialList', params: { lyric: lyric }}" v-if="category == 'Music'">
                     <span class="serialInfo"></span>
                 </router-link> -->
-
-                <router-link :to="{ name: 'serialList', params: { lyric: lyric }}" v-if="category == 'Music'">
-                    <span class="serialInfo"></span>
-                </router-link>
             </div>
             <div class="reading" @click="audioControl()" v-if="audio.src">
                 <div class="progress" :style="{ width: progressBarWidth }"></div>
@@ -66,7 +65,7 @@
 </template>
 
 <script>
-    import request from '../service/request';
+    import request from '../../service/request';
     import serialList from './serialList'
     export default {
         components: {
@@ -74,7 +73,7 @@
         },
         data() {
             return {
-                category: '',// 文章类别
+                category: '', // 文章类别
                 is_header_display: false, // 滑动隐藏header标识
                 title: '', // 标题
                 tag_title: '', // header特殊标题
@@ -97,8 +96,8 @@
                 //     Music: '音乐',
                 //     Movie: '影视'
                 // },
-                doc_scrollTop: '',// 滚动高度
-                is_comment_load: false,// 避免评论加载的重复请求
+                doc_scrollTop: '', // 滚动高度
+                is_comment_load: false, // 避免评论加载的重复请求
                 no_comment: false // 评论加载完毕标识
             }
         },
@@ -107,13 +106,13 @@
             this._setData();
             // 从home跳转过来会出发scroll事件，待解...
         },
-        beforeRouteLeave (to, from, next) {
+        beforeRouteLeave(to, from, next) {
             window.removeEventListener('scroll', this.addWScroll);
             next();
         },
         methods: {
             goback: function() {
-                this.$router.push({name: 'home'});
+                this.$router.push({ name: 'home' });
             },
             // audio播放暂停控制
             audioControl: function() {
@@ -192,8 +191,12 @@
                         this.content = data.content;
                         this.editor = data.charge_edt.slice(1, -1);
                         this.author = data.author_list;
-                        this.serial_id = data.serial_id;
-                        this.number = data.number;
+                        this.moreInfo_name = 'serialList';
+                        this.moreInfo_params = {
+                            serial_id: data.serial_id,
+                            number: data.number
+                        }
+                        this.moreInfo_class = 'serial_sp'
                         break;
                     case 'Question':
                         this.title = data.question_title;
@@ -208,13 +211,22 @@
                         this.content = data.story;
                         this.editor = data.charge_edt.slice(1, -1);
                         this.author = data.author_list;
-                        this.lyric = data.lyric;
+                        this.moreInfo_name = 'musicInfo';
+                        this.moreInfo_params = {
+                            lyric: data.lyric
+                        };
+                        this.moreInfo_class = 'music_sp';
                         break;
                     case 'Movie':
                         this.title = data.data[0].title;
                         this.content = data.data[0].content;
                         this.editor = data.data[0].charge_edt + data.data[0].editor_email;
                         this.author = data.data[0].author_list;
+                        this.moreInfo_name = 'movieInfo';
+                        this.moreInfo_params = {
+
+                        };
+                        this.moreInfo_class = 'movie_sp';
                         break;
                 }
 
@@ -260,7 +272,7 @@
 </script>
 
 <style lang="less" scoped>
-    @import "../style/mixin";
+    @import "../../style/mixin";
     #detail {
         background-color: #fff;
         .header {
@@ -284,7 +296,7 @@
                 height: 20px;
                 width: 20px;
                 margin-top: 15px;
-                background-image: url(../assets/logo.png);
+                background-image: url(../../assets/logo.png);
                 background-size: 100%;
             }
             .back {
@@ -315,12 +327,20 @@
                 .author {
                     font-size: 12px;
                 }
-                .serialInfo {
+                a span {
                     float: right;
                     width: 16px;
                     height: 16px;
                     margin-top: 8px;
-                    .bgi("../assets/logo.png")
+                }
+                .serial_sp {
+                    .bgi("../../assets/logo.png")
+                }
+                .music_sp {
+                    .bgi("../../assets/logo.png")
+                }
+                .movie_sp{
+                    .bgi("../../assets/logo.png")
                 }
             }
             .reading {
@@ -345,18 +365,18 @@
                     float: right;
                 }
             }
-            .q_subtitle{
+            .q_subtitle {
                 margin-top: 30px;
-                .asker{
+                .asker {
                     font-size: 12px;
                 }
-                .subtitle{
+                .subtitle {
                     margin-top: 15px;
                     padding-bottom: 20px;
                     font-size: 14px;
                     border-bottom: 1px solid #f2f2f2;
                 }
-                .answerer{
+                .answerer {
                     font-size: 12px;
                     margin-top: 30px;
                 }

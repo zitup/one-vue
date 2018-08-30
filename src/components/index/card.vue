@@ -64,7 +64,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "../style/mixin";
+@import "../../style/mixin";
 #card {
     margin-bottom: 10px;
     background-color: #fff;
@@ -124,7 +124,7 @@ export default {
                 transform: translate(-50%, -50%);
                 height: 50px;
                 width: 50px;
-                .bgi("../assets/logo.png");
+                .bgi("../../assets/logo.png");
             }
             .music_title {
                 margin: 10px 0 15px;
@@ -158,7 +158,7 @@ export default {
                         display: inline-block;
                         width: 15px;
                         height: 15px;
-                        .bgi("../assets/logo.png");
+                        .bgi("../../assets/logo.png");
                     }
                     .like_count {
                         position: relative;
@@ -171,7 +171,7 @@ export default {
                     display: inline-block;
                     width: 15px;
                     height: 15px;
-                    .bgi("../assets/logo.png");
+                    .bgi("../../assets/logo.png");
                 }
             }
         }
