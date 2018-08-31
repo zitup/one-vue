@@ -1,6 +1,6 @@
 <template>
     <div id="detail" v-if="author[0]">
-        <div class="header" ref="header" :class="{ no_display: is_header_display }">
+        <div class="header" :class="{ no_display: is_header_display }">
             <span class="back" @click="goback()"></span>
             <span class="collect"></span>
             <p class="title">{{ headerTitle }}</p>
@@ -224,7 +224,7 @@
                         this.author = data.data[0].author_list;
                         this.moreInfo_name = 'movieInfo';
                         this.moreInfo_params = {
-
+                            
                         };
                         this.moreInfo_class = 'movie_sp';
                         break;
@@ -256,9 +256,9 @@
             // 随滑动隐藏或显示header
             doc_scrollTop: function(newVal, oldVal) {
                 if (newVal < oldVal) {
-                    this.$refs.header.style.opacity = 1
+                    this.is_header_display = false;
                 } else {
-                    this.$refs.header.style.opacity = 0
+                    this.is_header_display = true;
                 }
             },
             '$route' (to, from) {
@@ -291,6 +291,7 @@
             z-index: 1;
             &.no_display {
                 opacity: 0;
+                height: 0;
             }
             span {
                 height: 20px;
