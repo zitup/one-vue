@@ -1,10 +1,10 @@
 <template>
     <div id="detail" v-if="author[0]">
-        <div class="header" :class="{ no_display: is_header_display }">
+        <header class="header" :class="{ no_display: is_header_display }">
             <span class="back" @click="goback()"></span>
             <span class="collect"></span>
             <p class="title">{{ headerTitle }}</p>
-        </div>
+        </header>
         <div class="detail_wrap">
             <p class="title">{{ title }}</p>
             <div class="author_wrap">
@@ -12,9 +12,6 @@
                 <router-link :to="{ name: moreInfo_name, params: moreInfo_params}" v-if="category != 'Essay' && category != 'Question'">
                     <span :class="moreInfo_class"></span>
                 </router-link>
-                <!-- <router-link :to="{ name: 'serialList', params: { lyric: lyric }}" v-if="category == 'Music'">
-                    <span class="serialInfo"></span>
-                </router-link> -->
             </div>
             <div class="reading" @click="audioControl()" v-if="audio.src">
                 <div class="progress" :style="{ width: progressBarWidth }"></div>
@@ -213,7 +210,9 @@
                         this.author = data.author_list;
                         this.moreInfo_name = 'musicInfo';
                         this.moreInfo_params = {
-                            lyric: data.lyric
+                            lyric: data.lyric,
+                            info: data.info,
+                            cover: data.cover
                         };
                         this.moreInfo_class = 'music_sp';
                         break;
@@ -262,7 +261,7 @@
                 }
             },
             '$route' (to, from) {
-                if (from.name == 'serialList') {
+                if (from.name == 'serialList' || from.name == 'musicInfo') {
                     this._setData();
                     document.body.style.overflow = 'inherit';
                 }

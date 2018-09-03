@@ -21,11 +21,9 @@
                 title: '',// 名字
                 finished: '',// 是否完结
                 list: '',// 连载list
-                // number: this.$route.params.number
             }
         },
         created() {
-            // let serial_id = this.$route.params.serial_id;
             let that = this;
             request.getSerialList(that.serial_id).then(res => {
                 this.title = res.data.title;

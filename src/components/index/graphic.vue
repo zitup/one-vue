@@ -43,7 +43,7 @@ export default {
 
         .img{
             width: 100%;
-            margin-top: 44px;
+            padding-top: 44px;
         }
         .title_pic_info, .words_info{
             font-size: 12px;

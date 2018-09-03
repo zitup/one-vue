@@ -3,6 +3,7 @@ import Router from "vue-router";
 import home from "@/page/home";
 import detail from "../components/detail/detail";
 import serialList from "../components/detail/serialList";
+import musicInfo from "../components/detail/musicInfo";
 Vue.use(Router);
 
 export default new Router({
@@ -33,6 +34,11 @@ export default new Router({
             path: "/seriallist",
             name: "serialList",
             component: serialList,
+            props: true
+        },{
+            path: "/musicInfo",
+            name: 'musicInfo',
+            component: musicInfo,
             props: true
         }]
     },
