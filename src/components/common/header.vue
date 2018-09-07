@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import request from '../../service/request'
+import request from '@/service/request'
 export default {
     props: ['weather', 'is_not_today'],
     data() {

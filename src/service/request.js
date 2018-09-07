@@ -1,4 +1,4 @@
-import fetch from "../config/fetch";
+import fetch from "@/config/fetch";
 
 export default {
     //获取最新onelist

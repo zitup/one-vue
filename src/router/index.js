@@ -1,9 +1,9 @@
 import Vue from "vue";
 import Router from "vue-router";
-import home from "@/page/home";
-import detail from "../components/detail/detail";
-import serialList from "../components/detail/serialList";
-import musicInfo from "../components/detail/musicInfo";
+import home from "@/page/home/home";
+import detail from "@/page/detail/detail";
+import serialList from "@/page/detail/children/serialList";
+import musicInfo from "@/page/detail/children/musicInfo";
 Vue.use(Router);
 
 export default new Router({

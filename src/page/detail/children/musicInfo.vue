@@ -61,6 +61,7 @@
         padding-top: 50px;
         background-color: #fff;
         z-index: 1;
+
         .nav {
             position: fixed;
             top: 0;
@@ -70,6 +71,7 @@
             box-shadow: 0px 0px 30px 15px #fff;
             text-align: center;
             font-size: 0;
+
             .sp_1,
             .sp_2 {
                 display: inline-block;
@@ -81,19 +83,23 @@
                 color: #8e8e8e;
                 font-size: 12px;
                 border: 1px solid #808080;
+
                 &.active {
                     color: #fff;
                     background-color: #808080;
                 }
             }
+
             .sp_1 {
                 border-top-left-radius: 3px;
                 border-bottom-left-radius: 3px;
             }
+
             .sp_2 {
                 border-top-right-radius: 3px;
                 border-bottom-right-radius: 3px;
             }
+
             .close {
                 position: absolute;
                 top: 15px;
@@ -101,26 +107,32 @@
                 font-size: 15px;
             }
         }
+
         .lyric,
         .info {
             display: none;
             margin-top: 20px;
-            line-height: 23px;
+            padding: 0 65px;
+            line-height: 25px;
             text-align: center;
             font-size: 13px;
             background-color: #fff;
+
             &.active {
                 display: block;
             }
+
             .img {
                 width: 100px;
                 margin-bottom: 20px;
                 vertical-align: bottom;
             }
         }
+
         .lyric {
             padding-bottom: 200px;
         }
+
         .switch {
             position: fixed;
             bottom: 0;
@@ -129,6 +141,7 @@
             background-color: #fff;
             text-align: center;
             box-shadow: 0 0 30px 15px #fff;
+
             .sp_3,
             .sp_4 {
                 display: inline-block;
@@ -136,11 +149,13 @@
                 width: 6px;
                 background-color: #e5e5e5;
                 border-radius: 50%;
+
                 &.active {
                     background-color: #333;
                     box-shadow: 0 0 6px 0 #333;
                 }
             }
+
             .sp_3 {
                 margin-right: 10px;
             }

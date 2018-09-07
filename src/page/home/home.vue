@@ -8,12 +8,12 @@
 </template>
 
 <script>
-    import headTop from '../components/index/header';
-    import graphic from '../components/index/graphic';
-    import overview from '../components/index/overview';
-    import card from '../components/index/card';
+    import headTop from '@/components/common/header';
+    import graphic from '@/components/common/graphic';
+    import overview from '@/components/common/overview';
+    import card from '@/components/common/card';
 
-    import request from '../service/request'
+    import request from '@/service/request'
 
     export default {
         data() {

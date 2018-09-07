@@ -1,18 +1,31 @@
 <template>
     <div id="detail" v-if="author[0]">
-        <header class="header" :class="{ no_display: is_header_display }">
+        <header class="header" :class="{ no_display: is_header_display, with_music: doc_scrollTop < 101 && category == 'Music' }">
             <span class="back" @click="goback()"></span>
             <span class="collect"></span>
             <p class="title">{{ headerTitle }}</p>
         </header>
+
+        <!-- 音乐图片 -->
+        <div class="music_img" v-if="category == 'Music'">
+            <img class="img_bg" :src="feeds_cover">
+            <img class="img_av" :src="cover">
+            <p class="music_info">· {{ music_title }} · {{ music_author }} | {{ album }}</p>
+        </div>
+        <!-- 音乐图片 -->
+
         <div class="detail_wrap">
             <p class="title">{{ title }}</p>
             <div class="author_wrap">
                 <span class="author">文／{{ author[0].user_name }}</span>
+                <!-- 连载、音乐、影视信息 -->
                 <router-link :to="{ name: moreInfo_name, params: moreInfo_params}" v-if="category != 'Essay' && category != 'Question'">
                     <span :class="moreInfo_class"></span>
                 </router-link>
+                <!-- 连载、音乐、影视信息 -->
             </div>
+
+            <!-- audio -->
             <div class="reading" @click="audioControl()" v-if="audio.src">
                 <div class="progress" :style="{ width: progressBarWidth }"></div>
                 <span>图标</span>
@@ -21,11 +34,16 @@
                 <span class="date">{{ getAudioTime() }}</span>
                 <audio :src="audio.src" id="audio" @timeupdate="updatetime"></audio>
             </div>
+            <!-- audio -->
+
+            <!-- 问答 -->
             <div class="q_subtitle" v-if="category == 'Question'">
                 <p class="asker">{{ asker }}问：</p>
                 <p class="subtitle">{{ title }}</p>
                 <p class="answerer">{{ answerer }}答：</p>
             </div>
+            <!-- 问答 -->
+
             <div class="content" v-html="content"></div>
             <p class="editor">{{ editor }}</p>
             <div class="author_title">作者</div>
@@ -62,8 +80,8 @@
 </template>
 
 <script>
-    import request from '../../service/request';
-    import serialList from './serialList'
+    import request from '@/service/request';
+    import serialList from './children/serialList'
     export default {
         components: {
             serialList
@@ -215,6 +233,11 @@
                             cover: data.cover
                         };
                         this.moreInfo_class = 'music_sp';
+                        this.feeds_cover = data.feeds_cover;
+                        this.cover = data.cover;
+                        this.album = data.album;
+                        this.music_title = data.title;
+                        this.music_author = data.author.user_name;
                         break;
                     case 'Movie':
                         this.title = data.data[0].title;
@@ -223,7 +246,7 @@
                         this.author = data.data[0].author_list;
                         this.moreInfo_name = 'movieInfo';
                         this.moreInfo_params = {
-                            
+
                         };
                         this.moreInfo_class = 'movie_sp';
                         break;
@@ -239,7 +262,10 @@
         computed: {
             // header名字
             headerTitle: function() {
-                if (this.doc_scrollTop > 80) {
+                if (this.doc_scrollTop < 101) {
+
+                }
+                if (this.doc_scrollTop > 150) {
                     return this.title;
                 } else {
                     return this.tag_title || this.$store.state.category[this.$route.name]
@@ -260,7 +286,7 @@
                     this.is_header_display = true;
                 }
             },
-            '$route' (to, from) {
+            '$route'(to, from) {
                 if (from.name == 'serialList' || from.name == 'musicInfo') {
                     this._setData();
                     document.body.style.overflow = 'inherit';
@@ -272,8 +298,10 @@
 
 <style lang="less" scoped>
     @import "../../style/mixin";
+
     #detail {
         background-color: #fff;
+
         .header {
             position: fixed;
             top: 0;
@@ -285,13 +313,22 @@
             font-size: 14px;
             border-bottom: 1px solid #e6e6e6;
             background-color: #fff;
-            transition: .2s linear;
+            transition: .3s linear;
             overflow: hidden;
             z-index: 1;
+
             &.no_display {
-                opacity: 0;
-                height: 0;
+                transform: translate(0, -50px);
             }
+
+            &.with_music {
+                border: none;
+                background-color: transparent;
+                .title {
+                    display: none;
+                }
+            }
+
             span {
                 height: 20px;
                 width: 20px;
@@ -299,12 +336,15 @@
                 background-image: url(../../assets/logo.png);
                 background-size: 100%;
             }
+
             .back {
                 float: left;
             }
+
             .collect {
                 float: right;
             }
+
             .title {
                 margin: 0 40px;
                 white-space: nowrap;
@@ -312,37 +352,80 @@
                 overflow: hidden;
             }
         }
+
+        .music_img {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-top: 60%;
+
+            .img_bg {
+                position: absolute;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .img_av {
+                position: absolute;
+                height: 50%;
+                left: 0;
+                top: 12px;
+                right: 0;
+                bottom: 0;
+                margin: auto;
+            }
+
+            .music_info {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 25px;
+                font-size: 12px;
+                text-align: center;
+                color: #d8d8d8;
+            }
+        }
+
         .detail_wrap {
             padding: 0 20px;
             margin-top: 50px;
+
             .title {
                 padding-top: 30px;
                 line-height: 36px;
                 font-size: 24px;
                 font-weight: 700;
             }
+
             .author_wrap {
                 margin-top: 30px;
                 line-height: 32px;
+
                 .author {
                     font-size: 12px;
                 }
+
                 a span {
                     float: right;
                     width: 16px;
                     height: 16px;
                     margin-top: 8px;
                 }
+
                 .serial_sp {
                     .bgi("../../assets/logo.png")
                 }
+
                 .music_sp {
                     .bgi("../../assets/logo.png")
                 }
-                .movie_sp{
+
+                .movie_sp {
                     .bgi("../../assets/logo.png")
                 }
             }
+
             .reading {
                 position: relative;
                 height: 46px;
@@ -352,6 +435,7 @@
                 border: 1px solid #666666;
                 border-radius: 5px;
                 font-size: 16px;
+
                 .progress {
                     width: 1px;
                     max-width: 100%;
@@ -361,41 +445,50 @@
                     left: 0px;
                     background: rgba(0, 0, 0, 0.05);
                 }
+
                 .date {
                     float: right;
                 }
             }
+
             .q_subtitle {
                 margin-top: 30px;
+
                 .asker {
                     font-size: 12px;
                 }
+
                 .subtitle {
                     margin-top: 15px;
                     padding-bottom: 20px;
                     font-size: 14px;
                     border-bottom: 1px solid #f2f2f2;
                 }
+
                 .answerer {
                     font-size: 12px;
                     margin-top: 30px;
                 }
             }
+
             .content {
                 margin-top: 20px;
             }
+
             .editor {
                 margin-top: 30px;
                 color: #808080;
                 line-height: 18px;
                 font-size: 12px;
             }
+
             .author_title,
             .comment_title {
                 line-height: 21px;
                 font-size: 14px;
                 font-weight: normal;
                 padding-bottom: 10px;
+
                 &:after {
                     content: "";
                     height: 4px;
@@ -406,25 +499,31 @@
                     margin-top: 8px;
                 }
             }
+
             .author_title {
                 margin-top: 34px;
             }
+
             .author_info {
                 padding: 10px 0;
+
                 .img {
                     float: left;
                     width: 40px;
                     height: 40px;
                     border-radius: 50%;
                 }
+
                 .info {
                     float: left;
                     margin-left: 12px;
                     max-width: 66%;
+
                     .name {
                         font-size: 14px;
                         line-height: 21px;
                     }
+
                     .brief {
                         font-size: 12px;
                         line-height: 21px;
@@ -434,6 +533,7 @@
                         white-space: nowrap;
                     }
                 }
+
                 .follow {
                     float: right;
                     width: 44px;
@@ -444,38 +544,46 @@
                     color: #808080;
                     border: 1px solid rgba(128, 128, 128, 0.6);
                     border-radius: 2px;
+
                     &.fans {
                         background-color: #d9d9d9;
                         border: none;
                     }
                 }
             }
+
             .comment_title {
                 margin-top: 30px;
             }
+
             .comment {
                 padding: 10px 0;
                 border-bottom: 1px solid #eaeaea;
                 font-size: 0;
+
                 &.is_top_comment {
                     border-bottom: none;
                 }
+
                 .img {
                     height: 20px;
                     width: 20px;
                     border-radius: 50%;
                     vertical-align: top;
                 }
+
                 .name {
                     margin-left: 10px;
                     font-size: 13px;
                     color: #979797;
                 }
+
                 .date {
                     float: right;
                     font-size: 12px;
                     color: #808080;
                 }
+
                 .quote {
                     margin: 10px 0 0 20px;
                     padding: 0 10px;
@@ -483,21 +591,25 @@
                     border: 1px solid #eaeaea;
                     font-size: 13px;
                 }
+
                 .c_content {
                     margin: 10px 0 0 20px;
                     line-height: 25px;
                     font-size: 13px;
                 }
+
                 .c_label {
                     margin-top: 15px;
                     font-size: 10px;
                     color: #666666;
                     text-align: right;
                 }
+
                 .top_comment {
                     font-size: 12px;
                     color: #eaeaea;
                     text-align: center;
+
                     .l,
                     .r {
                         height: 1px;
@@ -505,9 +617,11 @@
                         margin-top: 8px;
                         background-color: #eaeaea;
                     }
+
                     .l {
                         float: left;
                     }
+
                     .r {
                         float: right;
                     }

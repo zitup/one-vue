@@ -13,14 +13,14 @@
 </template>
 
 <script>
-    import request from '../../service/request';
+    import request from '@/service/request';
     export default {
         props: ['serial_id', 'number'],
         data() {
             return {
-                title: '',// 名字
-                finished: '',// 是否完结
-                list: '',// 连载list
+                title: '', // 名字
+                finished: '', // 是否完结
+                list: '', // 连载list
             }
         },
         created() {
@@ -43,7 +43,8 @@
 </script>
 
 <style lang="less" scoped>
-    @import '../../style/mixin';
+    @import '../../../style/mixin';
+
     #serialList {
         position: fixed;
         top: 0;
@@ -52,17 +53,20 @@
         background-color: rgba(0, 0, 0, .5);
         z-index: 1;
         overflow: hidden;
+
         .list_wrap {
             margin-top: 160px;
             padding: 12px 0;
             background-color: #fff;
+
             .close {
                 height: 20px;
                 width: 20px;
                 margin: 0 12px;
-                .bgi("../../assets/logo.png");
+                .bgi("../../../assets/logo.png");
                 text-align: left;
             }
+
             .title {
                 margin: 0 12px 10px;
                 padding-bottom: 15px;
@@ -71,10 +75,12 @@
                 color: #000000;
                 text-align: center;
             }
+
             .li {
                 float: left;
                 width: 12.5%;
                 overflow: hidden;
+
                 a {
                     display: block;
                     width: 85%;
@@ -85,9 +91,11 @@
                     font-weight: bold;
                     text-align: center;
                     transition: 0.1s ease-out;
+
                     &:active {
                         box-shadow: 0 0 10px 1px #e3e3e3;
                     }
+
                     &.current {
                         text-decoration: underline;
                     }
