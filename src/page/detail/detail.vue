@@ -7,11 +7,7 @@
         </header>
 
         <!-- 音乐图片 -->
-        <div class="music_img" v-if="category == 'Music'">
-            <img class="img_bg" :src="feeds_cover">
-            <img class="img_av" :src="cover">
-            <p class="music_info">· {{ music_title }} · {{ music_author }} | {{ album }}</p>
-        </div>
+        <Music :music_props="music_props" v-if="category == 'Music'"/> 
         <!-- 音乐图片 -->
 
         <div class="detail_wrap">
@@ -81,10 +77,10 @@
 
 <script>
     import request from '@/service/request';
-    import serialList from './children/serialList'
+    import Music from '@/components/music/music';
     export default {
         components: {
-            serialList
+            Music
         },
         data() {
             return {
@@ -104,13 +100,6 @@
                 is_audio_play: false, // 音频是否播放，默认false
                 comments: [], // 评论数据
                 lastCommentId: '', // 最后一个评论的id，用于获取下批评论
-                // category: {
-                //     Essay: '阅读',
-                //     Serialcontent: '连载',
-                //     Question: '问答',
-                //     Music: '音乐',
-                //     Movie: '影视'
-                // },
                 doc_scrollTop: '', // 滚动高度
                 is_comment_load: false, // 避免评论加载的重复请求
                 no_comment: false // 评论加载完毕标识
@@ -233,11 +222,13 @@
                             cover: data.cover
                         };
                         this.moreInfo_class = 'music_sp';
-                        this.feeds_cover = data.feeds_cover;
-                        this.cover = data.cover;
-                        this.album = data.album;
-                        this.music_title = data.title;
-                        this.music_author = data.author.user_name;
+                        this.music_props = {
+                            feeds_cover: data.feeds_cover,
+                            cover: data.cover,
+                            album: data.album,
+                            music_title: data.title,
+                            music_author: data.author.user_name
+                        }
                         break;
                     case 'Movie':
                         this.title = data.data[0].title;
@@ -350,40 +341,6 @@
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
-            }
-        }
-
-        .music_img {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-top: 60%;
-
-            .img_bg {
-                position: absolute;
-                top: 0;
-                width: 100%;
-                height: 100%;
-            }
-
-            .img_av {
-                position: absolute;
-                height: 50%;
-                left: 0;
-                top: 12px;
-                right: 0;
-                bottom: 0;
-                margin: auto;
-            }
-
-            .music_info {
-                position: absolute;
-                left: 0;
-                right: 0;
-                bottom: 25px;
-                font-size: 12px;
-                text-align: center;
-                color: #d8d8d8;
             }
         }
 
