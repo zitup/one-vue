@@ -7,7 +7,7 @@
         </header>
 
         <!-- 音乐图片 -->
-        <Music :music_props="music_props" v-if="category == 'Music'"/> 
+        <MusicImg :music_props="music_props" v-if="category == 'Music'"/> 
         <!-- 音乐图片 -->
 
         <div class="detail_wrap">
@@ -77,10 +77,10 @@
 
 <script>
     import request from '@/service/request';
-    import Music from '@/components/music/music';
+    import MusicImg from '@/components/music/music-img';
     export default {
         components: {
-            Music
+            MusicImg
         },
         data() {
             return {
@@ -227,7 +227,8 @@
                             cover: data.cover,
                             album: data.album,
                             music_title: data.title,
-                            music_author: data.author.user_name
+                            music_author: data.author.user_name,
+                            music_id: data.music_id
                         }
                         break;
                     case 'Movie':
