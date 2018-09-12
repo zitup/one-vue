@@ -3,9 +3,11 @@
         <div class="music_img">
             <img class="img_bg" :src="music_props.feeds_cover">
             <div class="img_cd" :class="{ play: is_music_play }"></div>
-            <img class="img_avatar" :src="music_props.cover" @click="play()">
-            <div class="play_bg">
-                <div class="play_btn"></div>
+            <div @click="play()">
+                <img class="img_avatar" :src="music_props.cover">
+                <div class="play_bg">
+                    <div :class="[{playing: is_music_play}, 'play_btn']"></div>
+                </div>
             </div>
             <p class="music_info">· {{ music_props.music_title }} · {{ music_props.music_author }} | {{ music_props.album }}</p>
             <audio ref="audio" id="audio" :src="music_props.music_id"></audio>
@@ -14,20 +16,20 @@
 </template>
 
 <script>
-export default {
-    props: ['music_props'],
-    data() {
-        return {
-            is_music_play: false
-        }
-    },
-    methods: {
-        play: function() {
-            this.is_music_play ? this.$refs.audio.pause() : this.$refs.audio.play();
-            this.is_music_play = !this.is_music_play;
+    export default {
+        props: ['music_props'],
+        data() {
+            return {
+                is_music_play: false
+            }
+        },
+        methods: {
+            play: function() {
+                this.is_music_play ? this.$refs.audio.pause() : this.$refs.audio.play();
+                this.is_music_play = !this.is_music_play;
+            }
         }
     }
-}
 </script>
 
 <style lang="less" scoped>
@@ -91,13 +93,40 @@ export default {
                 top: 0;
                 right: 0;
                 bottom: 0;
-                left: 0;
+                left: 10%;
                 margin: auto;
                 height: 0;
                 width: 0;
-                border-width: 10px 0 10px 10px;
+                border-width: 10px 0 10px 14px;
                 border-style: solid;
                 border-color: transparent transparent transparent #fff;
+
+                &.playing {
+                    width: 100%;
+                    height: 100%;
+                    left: 0;
+                    border: none;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    &::before {
+                        display: inline-block;
+                        content: '';
+                        height: 30%;
+                        width: 3px;
+                        background-color: #fff;
+                    }
+
+                    &::after {
+                        display: inline-block;
+                        content: '';
+                        height: 30%;
+                        width: 3px;
+                        margin-left: 2px;
+                        background-color: #fff;
+                    }
+                }
             }
         }
 
