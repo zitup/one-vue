@@ -10,6 +10,8 @@
         <MusicImg :music_props="music_props" v-if="category == 'Music'"/> 
         <!-- 音乐图片 -->
 
+        <MusicPlay />
+
         <div class="detail_wrap">
             <p class="title">{{ title }}</p>
             <div class="author_wrap">
@@ -78,9 +80,11 @@
 <script>
     import request from '@/service/request';
     import MusicImg from '@/components/music/music-img';
+    import MusicPlay from '@/components/music/music-play';
     export default {
         components: {
-            MusicImg
+            MusicImg,
+            MusicPlay
         },
         data() {
             return {

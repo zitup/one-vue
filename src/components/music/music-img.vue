@@ -1,17 +1,15 @@
 <template>
-    <div>
-        <div class="music_img">
-            <img class="img_bg" :src="music_props.feeds_cover">
-            <div class="img_cd" :class="{ play: is_music_play }"></div>
-            <div @click="play()">
-                <img class="img_avatar" :src="music_props.cover">
-                <div class="play_bg">
-                    <div :class="[{playing: is_music_play}, 'play_btn']"></div>
-                </div>
+    <div id="music-img">
+        <img class="img-bg" :src="music_props.feeds_cover">
+        <div class="img-cd" :class="{ play: is_music_play }"></div>
+        <div @click="play()">
+            <img class="img-avatar" :src="music_props.cover">
+            <div class="play-bg">
+                <div :class="[{playing: is_music_play}, 'play-btn']"></div>
             </div>
-            <p class="music_info">· {{ music_props.music_title }} · {{ music_props.music_author }} | {{ music_props.album }}</p>
-            <audio ref="audio" id="audio" :src="music_props.music_id"></audio>
         </div>
+        <p class="music-info">· {{ music_props.music_title }} · {{ music_props.music_author }} | {{ music_props.album }}</p>
+        <audio ref="music_audio" id="music-audio" :src="music_props.music_id"></audio>
     </div>
 </template>
 
@@ -25,7 +23,7 @@
         },
         methods: {
             play: function() {
-                this.is_music_play ? this.$refs.audio.pause() : this.$refs.audio.play();
+                this.is_music_play ? this.$refs.music_audio.pause() : this.$refs.music_audio.play();
                 this.is_music_play = !this.is_music_play;
             }
         }
@@ -33,20 +31,20 @@
 </script>
 
 <style lang="less" scoped>
-    .music_img {
+    #music-img {
         position: relative;
         width: 100%;
         height: 0;
         padding-top: 60%;
 
-        .img_bg {
+        .img-bg {
             position: absolute;
             top: 0;
             width: 100%;
             height: 100%;
         }
 
-        .img_cd {
+        .img-cd {
             position: absolute;
             left: 0;
             top: 5%;
@@ -65,7 +63,7 @@
             }
         }
 
-        .img_avatar {
+        .img-avatar {
             position: absolute;
             height: 50%;
             left: 0;
@@ -75,7 +73,7 @@
             margin: auto;
         }
 
-        .play_bg {
+        .play-bg {
             position: absolute;
             left: 0;
             right: 0;
@@ -88,7 +86,7 @@
             border-radius: 50%;
             background-color: rgba(0, 0, 0, .6);
 
-            .play_btn {
+            .play-btn {
                 position: absolute;
                 top: 0;
                 right: 0;
@@ -130,7 +128,7 @@
             }
         }
 
-        .music_info {
+        .music-info {
             position: absolute;
             left: 0;
             right: 0;
