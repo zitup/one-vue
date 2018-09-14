@@ -5,11 +5,11 @@
         <div @click="play()">
             <img class="img-avatar" :src="music_props.cover">
             <div class="play-bg">
-                <div :class="[{playing: is_music_play}, 'play-btn']"></div>
+                <div :class="['play-btn', {playing: is_music_play}]"></div>
             </div>
         </div>
         <p class="music-info">· {{ music_props.music_title }} · {{ music_props.music_author }} | {{ music_props.album }}</p>
-        <audio ref="music_audio" id="music-audio" :src="music_props.music_id"></audio>
+        <!-- <audio ref="music_audio" id="music-audio" :src="music_props.music_id"></audio> -->
     </div>
 </template>
 

@@ -1,15 +1,20 @@
 <template>
-    <div id="music-play">
+    <div ref="music_play" id="music-play" @touchstart.prevent="hideMusicPlay">
         <div class="music-wrap">
-            <p class="title">爱是一场冒险，为你与生俱来</p>
-            <div class="process">
-                <div class="process-bar" :style="{ width: progressBarWidth }"></div>
+            <p class="title">{{ music_play_props.story_title }}</p>
+            <div ref="process" class="process" 
+                @touchstart.prevent="processTS"
+                @touchmove.prevent="processTM"
+                @touchend.prevent="processTE"
+            >
+                <div class="process-bar" :style="{width: processBar}"></div>
+                <audio ref="music_audio" @timeupdate="timeupdate" :src="music_play_props.music_src"></audio>
             </div>
-            <p class="time-left">03'17"</p>
-            <p class="author">曾楠</p>
+            <p class="time-left">{{ timeLeft }}</p>
+            <p class="author">{{ music_play_props.music_author }}</p>
             <div class="control">
                 <span class="last"></span>
-                <span class="pause-play"></span>
+                <span :class="['play-btn', {playing: is_music_play}]" @click="play()"></span>
                 <span class="next"></span>
             </div>
             <div class="foot-wrap">
@@ -19,17 +24,76 @@
                 <span class="music-detail"></span>
             </div>
         </div>
-    </div>    
+    </div>
 </template>
 
 <script>
-export default {
-    
-}
+    export default {
+        props: ["music_play_props"],
+        data() {
+            return {
+                is_music_play: false,
+                duration: '',
+                currentTime: '',
+                touch: {
+                    initiated: false
+                }
+            }
+        },
+        created() {
+            this.$nextTick(function() {
+                let that = this;
+                this.$refs.music_audio.oncanplay = function() {
+                    that.duration = that.$refs.music_audio.duration;
+                }
+
+            });
+        },
+        methods: {
+            hideMusicPlay: function() {
+                this.$refs.music_play.style.display = 'none';
+            },
+            play: function() {
+                this.is_music_play ? this.$refs.music_audio.pause() : this.$refs.music_audio.play();
+                this.is_music_play = !this.is_music_play;
+            },
+            timeupdate: function(e) {
+                this.currentTime = e.target.currentTime;
+            },
+            processTS: function(e) {
+                this.touch.initiated = true;
+                this.$refs.music_audio.currentTime = (e.touches[0].pageX - 20) / this.$refs.process.clientWidth * this.duration;
+            },
+            processTM: function(e) {
+                if(!this.touch.initiated) {
+                    return;
+                }
+                this.$refs.music_audio.currentTime = (e.touches[0].pageX - 20) / this.$refs.process.clientWidth * this.duration;
+            },
+            processTE: function(e) {
+                this.touch.initiated = false;
+            }
+        },
+        computed: {
+            processBar: function() {
+                let w = this.currentTime / this.duration * 100 + '%';
+                return w;
+            },
+            timeLeft: function () {
+                if (this.duration - this.currentTime == 0) {
+                    this.is_music_play = false;
+                }
+
+                let t = Math.floor((this.duration - this.currentTime) / 60) + '\'' + Math.floor((this.duration - this.currentTime) % 60) + '\"' ;
+                return t;
+            }
+        }
+    }
 </script>
 
 <style lang="less" scoped>
     @import "../../style/mixin";
+
     #music-play {
         position: fixed;
         top: 0;
@@ -56,23 +120,25 @@ export default {
             height: 2px;
             margin-top: 15px;
             background-color: #9f9f9f;
+            touch-action: none;
 
             .process-bar {
                 position: relative;
-                width: 10%;
+                width: 0;
                 height: 2px;
                 background-color: #000;
-                transition: .2s ease-in;
+                animation: 1s ease-in;
 
                 &::after {
                     position: absolute;
-                    top: -2px;
+                    top: -3px;
                     right: 0;
                     content: '';
-                    width: 5px;
-                    height: 5px;
+                    width: 4px;
+                    height: 4px;
                     background-color: #9f9f9f;
-                    box-shadow: 0 0 5px 5px #000;
+                    box-shadow: 0 2px 8px 0px #000;
+                    border: 2px solid #000;
                     border-radius: 50%;
                 }
             }
@@ -95,17 +161,20 @@ export default {
         }
 
         .control {
+            line-height: 20px;
             margin-top: 20px;
             text-align: center;
 
-            .last, .next {
+            .last,
+            .next {
                 position: relative;
                 display: inline-block;
                 width: 20px;
-                height: 15px;
+                height: 16px;
                 border-left: 4px solid #222;
 
-                &::before {
+                &::before,
+                &::after {
                     position: absolute;
                     left: -4px;
                     content: '';
@@ -117,14 +186,7 @@ export default {
                 }
 
                 &::after {
-                    position: absolute;
                     left: 5px;
-                    content: '';
-                    width: 0;
-                    height: 0;
-                    border-width: 8px 13px 8px 0;
-                    border-style: solid;
-                    border-color: transparent #222 transparent transparent;
                 }
             }
 
@@ -132,29 +194,33 @@ export default {
                 transform: rotateY(180deg);
             }
 
-            .pause-play {
+            .play-btn {
                 position: relative;
                 display: inline-block;
-                width: 20px;
-                height: 15px;
+                width: 13px;
+                height: 16px;
                 margin: 0 15px;
+                border-width: 8px 0 8px 13px;
+                border-style: solid;
+                border-color: transparent transparent transparent #000;
 
-                &::before {
-                    position: absolute;
-                    left: 5px;
-                    content: '';
-                    width: 4px;
-                    height: 15px;
-                    background-color: #222;
-                }
+                &.playing {
+                    border: none;
 
-                &::after {
-                    position: absolute;
-                    right: 5px;
-                    content: '';
-                    width: 4px;
-                    height: 15px;
-                    background-color: #222;
+                    &::before,
+                    &::after {
+                        position: absolute;
+                        left: 1px;
+                        content: '';
+                        width: 4px;
+                        height: 16px;
+                        background-color: #222;
+                    }
+
+                    &::after {
+                        left: auto;
+                        right: 1px;
+                    }
                 }
             }
         }
@@ -167,7 +233,9 @@ export default {
             text-align: center;
             font-size: 0;
 
-            .loop, .collect, .music-detail {
+            .loop,
+            .collect,
+            .music-detail {
                 display: inline-block;
                 width: 15px;
                 height: 15px;
@@ -197,7 +265,7 @@ export default {
                 height: 15px;
                 font-size: 12px;
                 color: #cccccc;
-            
+
                 &::before {
                     display: inline-block;
                     content: '';

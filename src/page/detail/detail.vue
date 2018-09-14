@@ -10,7 +10,7 @@
         <MusicImg :music_props="music_props" v-if="category == 'Music'"/> 
         <!-- 音乐图片 -->
 
-        <MusicPlay />
+        <MusicPlay :music_play_props="music_play_props"/>
 
         <div class="detail_wrap">
             <p class="title">{{ title }}</p>
@@ -30,7 +30,7 @@
                 <span>有声阅读</span> |
                 <span>{{ audio.anchor }}</span>
                 <span class="date">{{ getAudioTime() }}</span>
-                <audio :src="audio.src" id="audio" @timeupdate="updatetime"></audio>
+                <audio :src="audio.src" id="audio" @timeupdate="timeupdate"></audio>
             </div>
             <!-- audio -->
 
@@ -134,7 +134,7 @@
             getAudioTime: function() {
                 return Math.floor(this.audio.audio_duration / 60) + ':' + this.audio.audio_duration % 60;
             },
-            updatetime: function(e) {
+            timeupdate: function(e) {
                 this.audio.currentTime = e.target.currentTime;
             },
             _setData: function() {
@@ -233,6 +233,11 @@
                             music_title: data.title,
                             music_author: data.author.user_name,
                             music_id: data.music_id
+                        }
+                        this.music_play_props = {
+                            story_title: data.story_title,
+                            music_src: data.music_id,
+                            music_author: data.author.user_name
                         }
                         break;
                     case 'Movie':
