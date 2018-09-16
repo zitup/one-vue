@@ -1,29 +1,32 @@
 <template>
-    <div ref="music_play" id="music-play" @touchstart.prevent="hideMusicPlay">
-        <div class="music-wrap">
-            <p class="title">{{ music_play_props.story_title }}</p>
-            <div ref="process" class="process" 
-                @touchstart.prevent="processTS"
-                @touchmove.prevent="processTM"
-                @touchend.prevent="processTE"
-            >
-                <div class="process-bar" :style="{width: processBar}"></div>
-                <audio ref="music_audio" @timeupdate="timeupdate" :src="music_play_props.music_src"></audio>
-            </div>
-            <p class="time-left">{{ timeLeft }}</p>
-            <p class="author">{{ music_play_props.music_author }}</p>
-            <div class="control">
-                <span class="last"></span>
-                <span :class="['play-btn', {playing: is_music_play}]" @click="play()"></span>
-                <span class="next"></span>
-            </div>
-            <div class="foot-wrap">
-                <span class="loop"></span>
-                <span class="logo">看见音乐</span>
-                <span class="collect"></span>
-                <span class="music-detail"></span>
+    <div>
+        <div ref="music_play" id="music-play" :class="{show : is_panel_display}" @touchstart.prevent="hideMusicPlay">
+            <div class="music-wrap" @touchstart.stop="stopPropagation">
+                <p class="title">{{ music_play_props.story_title }}</p>
+                <div ref="process" class="process"
+                    @touchstart.prevent="processTS"
+                    @touchmove.prevent="processTM"
+                    @touchend.prevent="processTE"
+                >
+                    <div class="process-bar" :style="{width: processBar}"></div>
+                    <audio ref="music_audio" @timeupdate="timeupdate" :src="music_play_props.music_src"></audio>
+                </div>
+                <p class="time-left">{{ timeLeft }}</p>
+                <p class="author">{{ music_play_props.music_author }}</p>
+                <div class="control">
+                    <span class="last"></span>
+                    <span :class="['play-btn', {playing: is_music_play}]" @click="play()"></span>
+                    <span class="next"></span>
+                </div>
+                <div class="foot-wrap">
+                    <span class="loop"></span>
+                    <span class="logo">看见音乐</span>
+                    <span class="collect"></span>
+                    <span class="music-detail"></span>
+                </div>
             </div>
         </div>
+        <div :class="['music-btn', {show: is_btn_display}]" @click="musicPanelControl"></div>
     </div>
 </template>
 
@@ -32,12 +35,13 @@
         props: ["music_play_props"],
         data() {
             return {
-                is_music_play: false,
                 duration: '',
                 currentTime: '',
                 touch: {
                     initiated: false
-                }
+                },
+                is_panel_display: false, // 音乐面板显示控制
+                is_btn_display: false // 音乐按钮显示控制
             }
         },
         created() {
@@ -48,14 +52,25 @@
                 }
 
             });
+            if (this.$store.state.is_music_play) {
+                this.is_btn_display = true;
+            }
         },
         methods: {
+            stopPropagation: function() {
+                // e.stopPropagation();
+            },
             hideMusicPlay: function() {
-                this.$refs.music_play.style.display = 'none';
+                this.is_panel_display = false;
+            },
+            musicPanelControl: function() {
+                this.is_panel_display = !this.is_panel_display;
             },
             play: function() {
-                this.is_music_play ? this.$refs.music_audio.pause() : this.$refs.music_audio.play();
-                this.is_music_play = !this.is_music_play;
+                this.$store.commit({
+                    type: 'updateMusicState',
+                    is_music_play: !this.$store.state.is_music_play
+                })
             },
             timeupdate: function(e) {
                 this.currentTime = e.target.currentTime;
@@ -75,17 +90,33 @@
             }
         },
         computed: {
+            is_music_play: function() {
+                return this.$store.state.is_music_play;
+            },
             processBar: function() {
                 let w = this.currentTime / this.duration * 100 + '%';
                 return w;
             },
             timeLeft: function () {
-                if (this.duration - this.currentTime == 0) {
-                    this.is_music_play = false;
+                if (this.duration && this.duration == this.currentTime) {
+                    this.$store.commit({
+                        type: 'updateMusicState',
+                        is_music_play: false
+                    })
                 }
 
                 let t = Math.floor((this.duration - this.currentTime) / 60) + '\'' + Math.floor((this.duration - this.currentTime) % 60) + '\"' ;
                 return t;
+            }
+        },
+        watch: {
+            is_music_play: function(newVal, oldVal) {
+                if(oldVal != newVal) {
+                    this.$store.state.is_music_play ? this.$refs.music_audio.play() : this.$refs.music_audio.pause();
+                }
+                if(newVal && !this.is_btn_display) {
+                    this.is_btn_display = true;
+                }
             }
         }
     }
@@ -102,6 +133,11 @@
         height: 100%;
         overflow: hidden;
         background-color: rgba(0, 0, 0, .5);
+        display: none;
+
+        &.show {
+            display: block;
+        }
 
         .music-wrap {
             padding: 15px 20px 20px;
@@ -275,6 +311,21 @@
                     .bgi('../../assets/logo.png')
                 }
             }
+        }
+
+    }
+
+    .music-btn {
+        position: fixed;
+        top: 35%;
+        right: 0;
+        width: 20px;
+        height: 10px;
+        background-color: #000;
+        display: none;
+
+        &.show {
+            display: block;
         }
     }
 </style>

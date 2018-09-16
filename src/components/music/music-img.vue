@@ -9,22 +9,23 @@
             </div>
         </div>
         <p class="music-info">· {{ music_props.music_title }} · {{ music_props.music_author }} | {{ music_props.album }}</p>
-        <!-- <audio ref="music_audio" id="music-audio" :src="music_props.music_id"></audio> -->
     </div>
 </template>
 
 <script>
     export default {
         props: ['music_props'],
-        data() {
-            return {
-                is_music_play: false
-            }
-        },
         methods: {
             play: function() {
-                this.is_music_play ? this.$refs.music_audio.pause() : this.$refs.music_audio.play();
-                this.is_music_play = !this.is_music_play;
+                this.$store.commit({
+                    type: 'updateMusicState',
+                    is_music_play: !this.is_music_play
+                })
+            }
+        },
+        computed: {
+            is_music_play: function() {
+                return this.$store.state.is_music_play;
             }
         }
     }

@@ -18,7 +18,8 @@ const state = {
         Question: '问答',
         Music: '音乐',
         Movie: '影视'
-    }
+    },
+    is_music_play: false // 音乐播放状态
 }
 
 export default new Vuex.Store({
@@ -26,6 +27,9 @@ export default new Vuex.Store({
     mutations: {
         setDate(state, payload) {
             state.date = payload.date;
+        },
+        updateMusicState(state, payload) {
+            state.is_music_play = payload.is_music_play;
         }
     }
 })
