@@ -37,4 +37,24 @@ npm run build --report
 
 <img src="https://github.com/zytjs/one-vue/blob/master/screenshots/UA.gif" width="500" height="500"/>  
 
-user agent修改为Android即可
+user agent修改为Android即可  
+
+## 部分截图  
+
+### 首页
+<img src="https://github.com/zytjs/one-vue/blob/master/screenshots/home.gif" width="375" height="667"/>  
+
+### 头部导航  
+<img src="https://github.com/zytjs/one-vue/blob/master/screenshots/header.gif" width="375" height="667"/>  
+
+### 文章详情页  
+<img src="https://github.com/zytjs/one-vue/blob/master/screenshots/detail.gif" width="375" height="667"/>  
+
+### 问答详情页  
+<img src="https://github.com/zytjs/one-vue/blob/master/screenshots/question.gif" width="375" height="667"/>  
+
+### 音乐详情页  
+<img src="https://github.com/zytjs/one-vue/blob/master/screenshots/music.gif" width="375" height="667"/>  
+
+### 连载详情页  
+<img src="https://github.com/zytjs/one-vue/blob/master/screenshots/series.gif" width="375" height="667"/>  
