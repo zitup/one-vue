@@ -18,4 +18,18 @@ npm run build
 npm run build --report
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## 说明  
+因为时间原因，本项目暂时为半成品，完成的有：  
+首页展示、顶部日期导航  
+文章、问答、音乐、影视、连载的详情页，包括内容和评论  
+音乐功能完成一部分
+
+## 效果演示  
+
+[查看demo请戳这里](http://zitup.cn/#/one)  
+
+请用chrome手机模式浏览，另外因为API的限制，需要修改chrome的UserAgent，方法如下：  
+
+<img src="https://github.com/zytjs/one-vue/blob/master/screenshots/UA.gif" width="500" height="500"/>  
+
+user agent修改为Android即可
