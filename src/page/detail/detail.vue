@@ -56,7 +56,7 @@
             <div class="comment_title">评论列表</div>
             <div class="comment clear" v-for="(comment, index) in comments" :key="comment.id + Math.random()" :class="{is_top_comment: index == 7}">
                 <div>
-                    <img v-lazy="comment.user.web_url" class="img">
+                    <img :src="comment.user.web_url" class="img">
                     <span class="name">{{ comment.user.user_name + comment.id }}</span>
                     <span class="date">{{ comment.created_at.slice(0, -3) }}</span>
                 </div>
