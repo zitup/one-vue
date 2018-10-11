@@ -7,7 +7,7 @@ let date = new Date();
 let month = date.getMonth() + 1;
 let year = date.getFullYear();
 let day = date.getDate();
-let latestDate = year + '-' + (month > 10 ? month : '0' + month) + '-' + day;
+let latestDate = year + '-' + (month >= 10 ? month : '0' + month) + '-' + day;
 
 const state = {
     today: latestDate, // 今天日期：xxxx-xx-xx
