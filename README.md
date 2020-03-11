@@ -31,7 +31,7 @@ npm run build --report
 
 ## 效果演示  
 
-[查看demo请戳这里](http://zitup.cn/#/one)  
+[查看demo请戳这里](https://zytjs.github.io/#/one)  
 
 请用chrome手机模式浏览，另外因为API的限制，需要修改chrome的UserAgent，方法如下：  
 
